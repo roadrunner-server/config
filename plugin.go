@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-version"
+	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
-	"github.com/spiral/errors"
 )
 
 const (
