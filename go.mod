@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/hashicorp/go-version v1.4.0
-	github.com/roadrunner-server/api v0.0.0-20220109114737-7e190efa2cf0
+	github.com/roadrunner-server/api/v2 v2.0.0-rc.2
 	github.com/roadrunner-server/errors v1.1.0
 	github.com/roadrunner-server/sdk/v2 v2.0.0-rc.1
 	github.com/spf13/viper v1.10.1
@@ -29,9 +29,6 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spiral/errors v1.0.12 // indirect
-	github.com/spiral/roadrunner/v2 v2.7.0-rc.2 // indirect
-	github.com/spiral/tcplisten v1.0.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
