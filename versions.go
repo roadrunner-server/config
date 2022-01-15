@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-version"
+	"github.com/roadrunner-server/config/v2/configs/v2_6"
+	"github.com/roadrunner-server/config/v2/configs/v2_7"
 	"github.com/spf13/viper"
 	"github.com/spiral/errors"
-	"github.com/spiral/roadrunner-plugins/v2/config/configs/v2_6"
-	"github.com/spiral/roadrunner-plugins/v2/config/configs/v2_7"
 )
 
 const (
