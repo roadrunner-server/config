@@ -36,7 +36,7 @@ type Plugin struct {
 }
 
 // Init config provider.
-func (p *Plugin) Init() error {
+func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 	const op = errors.Op("config_plugin_init")
 	p.viper = viper.New()
 	// If user provided []byte data with config, read it and ignore Path and Prefix
@@ -106,7 +106,7 @@ func (p *Plugin) Init() error {
 
 	// if RR version is less than configuration version (2.6 RR and 2.7 config)
 	if rrV.LessThan(cfgV) {
-		return errors.E(op, errors.Errorf("RR version is older than configuration version, RR version: %s, configuration version: %s", p.RRVersion, ver.(string)))
+		return errors.E(op, errors.Errorf("RR version is older than configuration version, RR version: %s, configuration version: %s", p.RRVersion(), ver.(string)))
 	}
 
 	if !rrV.GreaterThanOrEqual(cfgV) {

@@ -61,7 +61,7 @@ func transition(from, to *version.Version, v *viper.Viper) error {
 	return nil
 }
 
-func v26to27(v *viper.Viper) error {
+func v26to27(v *viper.Viper) error { //nolint:gocyclo
 	const op = errors.Op("v2.6_to_v2.7_transition")
 	from := &v2_6.Config{}
 

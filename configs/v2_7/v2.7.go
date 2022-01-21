@@ -1,4 +1,4 @@
-package v2_7 //nolint:stylecheck
+package v2_7 //nolint:revive,stylecheck
 
 import (
 	"github.com/roadrunner-server/sdk/v2/pool"

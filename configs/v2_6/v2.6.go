@@ -1,4 +1,4 @@
-package v2_6 //nolint:stylecheck
+package v2_6 //nolint:revive,stylecheck
 
 import (
 	"github.com/roadrunner-server/api/v2/plugins/jobs/pipeline"

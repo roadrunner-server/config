@@ -1,4 +1,4 @@
-package v2_6
+package v2_6 //nolint:revive,stylecheck
 
 import (
 	"time"
