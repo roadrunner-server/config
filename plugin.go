@@ -104,13 +104,21 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 		return errors.E(op, errors.Errorf("too old configuration version used, should be at least 2.6"))
 	}
 
-	// if RR version is less than configuration version (2.6 RR and 2.7 config)
-	if rrV.LessThan(cfgV) {
-		return errors.E(op, errors.Errorf("RR version is older than configuration version, RR version: %s, configuration version: %s", p.RRVersion(), ver.(string)))
+	// check the major versions
+	if rrV.Segments64()[0] != cfgV.Segments64()[0] {
+		return errors.E("RR and configuration major versions are different: RR %s, config: %s", rrV.String(), cfgV.String())
 	}
 
-	if !rrV.GreaterThanOrEqual(cfgV) {
-		return errors.Str("configuration version can't be greater that RR version")
+	// at this point, major versions are equal
+	// check the minor versions:
+	// if they different, RR version should be greater OR equal than configuration version
+	if rrV.Segments64()[1] != cfgV.Segments64()[1] {
+		// case when rr 2.8 and config 2.9
+		if rrV.Segments64()[1] < cfgV.Segments64()[1] {
+			return errors.Str("configuration version can't be greater that RR version")
+		}
+
+		// here we know, that the major versions are equal and RR minor version is greater or equal to the config version
 	}
 
 	// if rr version is equal to the configuration version, skip transition
