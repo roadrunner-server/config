@@ -1,4 +1,0 @@
-[module]
-package = "github.com/roadrunner-server/config"
-version = "latest"
-description = "configuration plugin for the RRv2"
