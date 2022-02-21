@@ -64,6 +64,24 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 		return errors.E(op, err)
 	}
 
+	// automatically inject ENV variables using ${ENV} pattern
+	for _, key := range p.viper.AllKeys() {
+		val := p.viper.Get(key)
+		p.viper.Set(key, parseEnv(val))
+	}
+
+	// override config Flags
+	if len(p.Flags) > 0 {
+		for _, f := range p.Flags {
+			key, val, errP := parseFlag(f)
+			if errP != nil {
+				return errors.E(op, errP)
+			}
+
+			p.viper.Set(key, val)
+		}
+	}
+
 	// get configuration version
 	ver := p.viper.Get(versionKey)
 	if ver == nil {
@@ -132,24 +150,6 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 			if err != nil {
 				return errors.E(op, err)
 			}
-		}
-	}
-
-	// automatically inject ENV variables using ${ENV} pattern
-	for _, key := range p.viper.AllKeys() {
-		val := p.viper.Get(key)
-		p.viper.Set(key, parseEnv(val))
-	}
-
-	// override config Flags
-	if len(p.Flags) > 0 {
-		for _, f := range p.Flags {
-			key, val, err := parseFlag(f)
-			if err != nil {
-				return errors.E(op, err)
-			}
-
-			p.viper.Set(key, val)
 		}
 	}
 

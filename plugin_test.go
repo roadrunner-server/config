@@ -106,4 +106,15 @@ func TestVersions(t *testing.T) {
 
 	err = p.Init()
 	require.NoError(t, err)
+
+	// no version but overwrite
+	p = &Plugin{
+		Prefix:  "rr",
+		Path:    "tests/.rr-no-version.yaml",
+		Version: "2.8.1",
+	}
+	p.Flags = append(p.Flags, "version=2.7")
+
+	err = p.Init()
+	require.NoError(t, err)
 }
