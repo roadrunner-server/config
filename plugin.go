@@ -67,7 +67,12 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 	// automatically inject ENV variables using ${ENV} pattern
 	for _, key := range p.viper.AllKeys() {
 		val := p.viper.Get(key)
-		p.viper.Set(key, parseEnv(val))
+		str, ok := val.(string)
+		if !ok {
+			p.viper.Set(key, val)
+			continue
+		}
+		p.viper.Set(key, os.ExpandEnv(str))
 	}
 
 	// override config Flags
@@ -247,19 +252,4 @@ func parseValue(value string) string {
 	}
 
 	return value
-}
-
-func parseEnv(value interface{}) interface{} {
-	str, ok := value.(string)
-	if !ok || len(str) <= 3 {
-		return value
-	}
-
-	if str[0:2] == "${" && str[len(str)-1:] == "}" {
-		if v, ok := os.LookupEnv(str[2 : len(str)-1]); ok {
-			return v
-		}
-	}
-
-	return str
 }
