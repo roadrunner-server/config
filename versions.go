@@ -13,6 +13,8 @@ import (
 const (
 	v26 string = "2.6.0"
 	v27 string = "2.7.0"
+	v28 string = "2.8.0"
+	v29 string = "2.9.0"
 )
 
 const (
@@ -36,7 +38,7 @@ func transition(from, to *version.Version, v *viper.Viper) error {
 	segFrom := from.Segments64()
 	segTo := to.Segments64()
 
-	if (len(segTo) < 3 || len(segFrom) < 3) || (segTo[1]-segFrom[1]) != 1 {
+	if len(segTo) < 3 || len(segFrom) < 3 {
 		return errors.Errorf("incompatible versions passed: from: %s, to: %s", from.String(), to.String())
 	}
 
@@ -45,16 +47,19 @@ func transition(from, to *version.Version, v *viper.Viper) error {
 	trTo := fmt.Sprintf("%d.%d.0", segTo[0], segTo[1])
 
 	switch trFrom {
+	// from config version
 	case v26:
-		switch trTo { //nolint:gocritic
-		case v27:
-			// transition configuration from v2.6 to v2.7
+		// to new config version
+		switch trTo {
+		case v27, v28, v29:
+			// transition configuration from v2.6 to v2.7, 2.8, 2.9
 			err := v26to27(v)
 			if err != nil {
 				return err
 			}
 		}
-	case v27:
+		// no changes
+	case v27, v28, v29:
 		return nil
 	}
 
