@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/hashicorp/go-version v1.4.0
-	github.com/roadrunner-server/api/v2 v2.14.0
+	github.com/roadrunner-server/api/v2 v2.16.0
 	github.com/roadrunner-server/errors v1.1.2
 	github.com/roadrunner-server/sdk/v2 v2.13.3
 	github.com/spf13/viper v1.11.0
