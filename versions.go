@@ -11,10 +11,11 @@ import (
 )
 
 const (
-	v26 string = "2.6.0"
-	v27 string = "2.7.0"
-	v28 string = "2.8.0"
-	v29 string = "2.9.0"
+	v26  string = "2.6.0"
+	v27  string = "2.7.0"
+	v28  string = "2.8.0"
+	v29  string = "2.9.0"
+	v210 string = "2.10.0"
 )
 
 const (
@@ -51,7 +52,7 @@ func transition(from, to *version.Version, v *viper.Viper) error {
 	case v26:
 		// to new config version
 		switch trTo {
-		case v27, v28, v29:
+		case v27, v28, v29, v210:
 			// transition configuration from v2.6 to v2.7, 2.8, 2.9
 			err := v26to27(v)
 			if err != nil {
@@ -59,7 +60,7 @@ func transition(from, to *version.Version, v *viper.Viper) error {
 			}
 		}
 		// no changes
-	case v27, v28, v29:
+	case v27, v28, v29, v210:
 		return nil
 	}
 
