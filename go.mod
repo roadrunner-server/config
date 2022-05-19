@@ -3,7 +3,7 @@ module github.com/roadrunner-server/config/v2
 go 1.18
 
 require (
-	github.com/hashicorp/go-version v1.4.0
+	github.com/hashicorp/go-version v1.5.0
 	github.com/roadrunner-server/api/v2 v2.17.1
 	github.com/roadrunner-server/errors v1.1.2
 	github.com/roadrunner-server/sdk/v2 v2.14.1
