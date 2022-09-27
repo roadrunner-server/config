@@ -1,0 +1,31 @@
+version: "2.7"
+
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+server:
+  command: "php ../rr-e2e-tests/php_test_files/psr-worker-bench.php"
+  relay: pipes
+
+http:
+  address: 127.0.0.1:15389
+  middleware:
+    - "sendfile"
+  pool:
+    allocate_timeout: 10s
+    num_workers: 2
+
+redis:
+  addrs:
+    - "${REDIS_HOST_1}"
+    - "${REDIS_HOST_2}"
+
+kv:
+  test-redis:
+    driver: redis
+    config: {}
+
+logs:
+  encoding: console
+  level: debug
+  mode: production

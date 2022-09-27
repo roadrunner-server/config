@@ -67,12 +67,29 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 	// automatically inject ENV variables using ${ENV} pattern
 	for _, key := range p.viper.AllKeys() {
 		val := p.viper.Get(key)
-		str, ok := val.(string)
-		if !ok {
+		switch t := val.(type) {
+		case string:
+			// for string just expand it
+			p.viper.Set(key, os.ExpandEnv(t))
+		case []any:
+			// for slice -> check if it's slice of strings
+			strArr := make([]string, 0, len(t))
+			for i := 0; i < len(t); i++ {
+				if valStr, ok := t[i].(string); ok {
+					strArr = append(strArr, os.ExpandEnv(valStr))
+					continue
+				}
+
+				p.viper.Set(key, val)
+			}
+
+			// we should set the whole array
+			if len(strArr) > 0 {
+				p.viper.Set(key, strArr)
+			}
+		default:
 			p.viper.Set(key, val)
-			continue
 		}
-		p.viper.Set(key, os.ExpandEnv(str))
 	}
 
 	// override config Flags

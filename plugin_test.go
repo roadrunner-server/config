@@ -1,10 +1,39 @@
 package config
 
 import (
+	"syscall"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestEnvArr(t *testing.T) {
+	require.NoError(t, syscall.Setenv("REDIS_HOST_1", "localhost:2999"))
+	require.NoError(t, syscall.Setenv("REDIS_HOST_2", "localhost:2998"))
+	p := &Plugin{
+		Prefix:  "rr",
+		Path:    "tests/.rr-env-arr.yaml",
+		Version: "2.11.3",
+	}
+
+	err := p.Init()
+	require.NoError(t, err)
+
+	str := p.viper.Get("redis.addrs")
+	if _, ok := str.([]string); !ok {
+		t.Fatal("not a slice")
+	}
+
+	require.Len(t, str.([]string), 2)
+
+	if str.([]string)[0] != "localhost:2999" && str.([]string)[0] != "localhost:2998" {
+		t.Fatalf("not expanded")
+	}
+
+	if str.([]string)[1] != "localhost:2999" && str.([]string)[1] != "localhost:2998" {
+		t.Fatalf("not expanded")
+	}
+}
 
 func TestVersions(t *testing.T) {
 	// rr 2.8, config 2.7
