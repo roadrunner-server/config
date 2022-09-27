@@ -77,9 +77,10 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
 					strArr = append(strArr, os.ExpandEnv(valStr))
-				} else {
-					p.viper.Set(key, os.ExpandEnv(valStr))
+					continue
 				}
+
+				p.viper.Set(key, val)
 			}
 
 			// we should set a whole array
