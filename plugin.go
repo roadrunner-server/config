@@ -83,7 +83,7 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 				p.viper.Set(key, val)
 			}
 
-			// we should set a whole array
+			// we should set the whole array
 			if len(strArr) > 0 {
 				p.viper.Set(key, strArr)
 			}
