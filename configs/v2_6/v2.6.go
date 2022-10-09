@@ -1,8 +1,8 @@
 package v2_6 //nolint:revive,stylecheck
 
 import (
-	"github.com/roadrunner-server/api/v2/plugins/jobs/pipeline"
-	"github.com/roadrunner-server/sdk/v2/pool"
+	"github.com/roadrunner-server/sdk/v3/plugins/jobs/pipeline"
+	"github.com/roadrunner-server/sdk/v3/pool"
 )
 
 type (
