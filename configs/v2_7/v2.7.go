@@ -6,7 +6,7 @@ import (
 
 type (
 	Env      map[string]string
-	Pipeline map[string]interface{}
+	Pipeline map[string]any
 )
 
 type Config struct {

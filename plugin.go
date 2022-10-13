@@ -179,7 +179,7 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 }
 
 // Overwrite overwrites existing config with provided values
-func (p *Plugin) Overwrite(values map[string]interface{}) error {
+func (p *Plugin) Overwrite(values map[string]any) error {
 	for key, value := range values {
 		p.viper.Set(key, value)
 	}
@@ -188,7 +188,7 @@ func (p *Plugin) Overwrite(values map[string]interface{}) error {
 }
 
 // UnmarshalKey reads configuration section into configuration object.
-func (p *Plugin) UnmarshalKey(name string, out interface{}) error {
+func (p *Plugin) UnmarshalKey(name string, out any) error {
 	const op = errors.Op("config_plugin_unmarshal_key")
 	err := p.viper.UnmarshalKey(name, &out)
 	if err != nil {
@@ -197,7 +197,7 @@ func (p *Plugin) UnmarshalKey(name string, out interface{}) error {
 	return nil
 }
 
-func (p *Plugin) Unmarshal(out interface{}) error {
+func (p *Plugin) Unmarshal(out any) error {
 	const op = errors.Op("config_plugin_unmarshal")
 	err := p.viper.Unmarshal(&out)
 	if err != nil {
@@ -207,7 +207,7 @@ func (p *Plugin) Unmarshal(out interface{}) error {
 }
 
 // Get raw config in a form of config section.
-func (p *Plugin) Get(name string) interface{} {
+func (p *Plugin) Get(name string) any {
 	return p.viper.Get(name)
 }
 
