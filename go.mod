@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/go-version v1.6.0
 	github.com/roadrunner-server/errors v1.2.0
 	github.com/roadrunner-server/sdk/v3 v3.0.0-beta.5
-	github.com/spf13/viper v1.13.0
+	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
 )
 
