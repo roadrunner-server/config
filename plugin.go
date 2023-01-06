@@ -225,14 +225,6 @@ func (p *Plugin) GracefulTimeout() time.Duration {
 	return p.Timeout
 }
 
-func (p *Plugin) Serve() chan error {
-	return make(chan error, 1)
-}
-
-func (p *Plugin) Stop() error {
-	return nil
-}
-
 // Name returns user-friendly plugin name
 func (p *Plugin) Name() string {
 	return PluginName

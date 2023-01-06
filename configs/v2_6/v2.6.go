@@ -1,9 +1,10 @@
 package v2_6 //nolint:revive,stylecheck
 
 import (
-	"github.com/roadrunner-server/sdk/v3/plugins/jobs/pipeline"
 	"github.com/roadrunner-server/sdk/v3/pool"
 )
+
+type Pipeline map[string]any
 
 type (
 	Env map[string]string
@@ -37,10 +38,10 @@ type Config struct {
 	} `mapstructure:"sqs"`
 	// --------------
 	Jobs *struct {
-		NumPollers   int                           `mapstructure:"num_pollers"`
-		PipelineSize int                           `mapstructure:"pipeline_size"`
-		Pool         *pool.Config                  `mapstructure:"pool"`
-		Pipelines    map[string]*pipeline.Pipeline `mapstructure:"pipelines"`
-		Consume      []string                      `mapstructure:"consume"`
+		NumPollers   int                 `mapstructure:"num_pollers"`
+		PipelineSize int                 `mapstructure:"pipeline_size"`
+		Pool         *pool.Config        `mapstructure:"pool"`
+		Pipelines    map[string]Pipeline `mapstructure:"pipelines"`
+		Consume      []string            `mapstructure:"consume"`
 	} `mapstructure:"jobs"`
 }

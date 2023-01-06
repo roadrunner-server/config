@@ -88,7 +88,7 @@ func v26to27(v *viper.Viper) error { //nolint:gocyclo
 
 	// iterate over old styled pipelines and fill the new configuration
 	for key, val := range from.Jobs.Pipelines {
-		dr := val.Driver()
+		dr := val["driver"]
 		newConfigKey := fmt.Sprintf("%s.%s.%s.%s", jobsKey, pipelinesKey, key, configKey)
 		oldConfigKey := fmt.Sprintf("%s.%s.%s", jobsKey, pipelinesKey, key)
 
