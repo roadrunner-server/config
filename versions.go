@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-version"
-	"github.com/roadrunner-server/config/v3/configs/v2_6"
-	"github.com/roadrunner-server/config/v3/configs/v2_7"
+	"github.com/roadrunner-server/config/v4/configs/v2_6"
+	"github.com/roadrunner-server/config/v4/configs/v2_7"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
