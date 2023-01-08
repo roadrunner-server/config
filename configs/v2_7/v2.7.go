@@ -1,7 +1,7 @@
 package v2_7 //nolint:revive,stylecheck
 
 import (
-	"github.com/roadrunner-server/sdk/v3/pool"
+	"github.com/roadrunner-server/sdk/v4/pool"
 )
 
 type (
