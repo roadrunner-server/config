@@ -7,16 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/go-version"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
 
 const (
-	PluginName       string = "config"
-	versionKey       string = "version"
-	defaultVersion   string = "2.6"
-	defaultRRVersion string = "2.7"
+	PluginName string = "config"
+	versionKey string = "version"
 )
 
 type Plugin struct {
@@ -36,7 +33,7 @@ type Plugin struct {
 }
 
 // Init config provider.
-func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
+func (p *Plugin) Init() error {
 	const op = errors.Op("config_plugin_init")
 	p.viper = viper.New()
 	// If user provided []byte data with config, read it and ignore Path and Prefix
@@ -107,72 +104,11 @@ func (p *Plugin) Init() error { //nolint:gocognit,gocyclo
 	// get configuration version
 	ver := p.viper.Get(versionKey)
 	if ver == nil {
-		// default version (versioning start point is 2.6)
-		ver = defaultVersion
+		return errors.Str("rr configuration file should contain a version e.g: version: 2.7")
 	}
 
 	if _, ok := ver.(string); !ok {
 		return errors.E(op, errors.Errorf("version should be a string, actual type: %T", ver))
-	}
-
-	// RR gets config feature starting v2.7, so, it's default
-	// but this only needed for tests, because starting v2.7 rr-binary will pass the version automatically.
-	if p.Version == "" || p.Version == "local" {
-		p.Version = defaultRRVersion
-	}
-
-	// configuration version
-	cfgV, err := version.NewSemver(ver.(string))
-	if err != nil {
-		return errors.E(op, err)
-	}
-
-	// RR version
-	rrV, err := version.NewSemver(p.Version)
-	if err != nil {
-		return errors.E(op, err)
-	}
-
-	// default version (2.6.0)
-	defV, err := version.NewSemver(defaultVersion)
-	if err != nil {
-		return errors.E(op, err)
-	}
-
-	// probably user set too old version
-	if cfgV.LessThan(defV) {
-		return errors.E(op, errors.Errorf("too old configuration version used, should be at least 2.6"))
-	}
-
-	// check the major versions
-	if rrV.Segments64()[0] != cfgV.Segments64()[0] {
-		return errors.E("RR and configuration major versions are different: RR %s, config: %s", rrV.String(), cfgV.String())
-	}
-
-	// at this point, major versions are equal
-	// check the minor versions:
-	// if they different, RR version should be greater OR equal than configuration version
-	if rrV.Segments64()[1] != cfgV.Segments64()[1] {
-		// case when rr 2.8 and config 2.9
-		if rrV.Segments64()[1] < cfgV.Segments64()[1] {
-			return errors.Str("configuration version can't be greater that RR version")
-		}
-
-		// here we know, that the major versions are equal and RR minor version is greater or equal to the config version
-	}
-
-	// if rr version is equal to the configuration version, skip transition
-	// but we can have versions like 2.7.0 (config) and 2.7.2 (RR version), they are not equal, but we don't change config
-	// in the bugfix versions. We should additionally check the minor versions
-	if !rrV.Equal(cfgV) {
-		// minor RR and minor config
-		if (rrV.Segments64()[0] == cfgV.Segments64()[0]) && rrV.Segments64()[1] != cfgV.Segments64()[1] {
-			// transform from the older config to the recent RR version
-			err = transition(cfgV, rrV, p.viper)
-			if err != nil {
-				return errors.E(op, err)
-			}
-		}
 	}
 
 	return nil
