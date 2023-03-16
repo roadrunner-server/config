@@ -14,6 +14,9 @@ import (
 const (
 	PluginName string = "config"
 	versionKey string = "version"
+
+	defaultConfigVersion string = "3"
+	prevConfigVersion    string = "2.7"
 )
 
 type Plugin struct {
@@ -108,7 +111,18 @@ func (p *Plugin) Init() error {
 	}
 
 	if _, ok := ver.(string); !ok {
-		return errors.E(op, errors.Errorf("version should be a string, actual type: %T", ver))
+		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
+	}
+
+	// RR includes the config feature by default starting from v2.7
+	// However, this is only required for tests because, starting with v2.7, the rr-binary will pass the version automatically.
+	if p.Version == "" || p.Version == "local" {
+		p.Version = defaultConfigVersion
+	}
+
+	// configuration v2.7
+	if ver.(string) == prevConfigVersion {
+		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/2.x/en")
 	}
 
 	return nil
