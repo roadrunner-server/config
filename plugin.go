@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -20,8 +19,7 @@ const (
 	prevConfigVersion    string = "2.7"
 
 	// default envs
-	envDefault1 = ":="
-	envDefault2 = ":-"
+	envDefault = ":-"
 )
 
 type Plugin struct {
@@ -69,20 +67,19 @@ func (p *Plugin) Init() error {
 		return errors.E(op, err)
 	}
 
-	regex := regexp.MustCompile(`\$\{(.+):[=-](.+)}`)
 	// automatically inject ENV variables using ${ENV} pattern
 	for _, key := range p.viper.AllKeys() {
 		val := p.viper.Get(key)
 		switch t := val.(type) {
 		case string:
 			// for string just expand it
-			p.viper.Set(key, parseEnvDefault(regex, t))
+			p.viper.Set(key, parseEnvDefault(t))
 		case []any:
 			// for slice -> check if it's slice of strings
 			strArr := make([]string, 0, len(t))
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, parseEnvDefault(regex, valStr))
+					strArr = append(strArr, parseEnvDefault(valStr))
 					continue
 				}
 
@@ -105,7 +102,7 @@ func (p *Plugin) Init() error {
 			if errP != nil {
 				return errors.E(op, errP)
 			}
-			p.viper.Set(key, parseEnvDefault(regex, val))
+			p.viper.Set(key, parseEnvDefault(val))
 		}
 	}
 
@@ -218,25 +215,8 @@ func parseValue(value string) string {
 	return value
 }
 
-func parseEnvDefault(r *regexp.Regexp, val string) string {
-	// env variable might use a syntax with default value
-	switch strings.Contains(val, envDefault1) || strings.Contains(val, envDefault2) {
-	// we have a default value for the env
-	case true:
-		// ${key:=default} or ${key:-val}
-		subStr := r.FindStringSubmatch(val)
-		// we should have 2 parts
-		if len(subStr) == 3 {
-			envVal := os.Getenv(subStr[1])
-			if envVal == "" {
-				return subStr[2]
-			}
-
-			return envVal
-		}
-	case false:
-		return os.ExpandEnv(val)
-	}
-
-	return ""
+func parseEnvDefault(val string) string {
+	// tcp://127.0.0.1:${RPC_PORT:-36643}
+	// for envs like this, part would be tcp://127.0.0.1:
+	return ExpandVal(val, os.Getenv)
 }
