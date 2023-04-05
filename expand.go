@@ -27,7 +27,7 @@ func ExpandVal(s string, mapping func(string) string) string {
 				// parse default syntax
 			} else if idx := strings.Index(s, envDefault); idx != -1 {
 				// ${key:=default} or ${key:-val}
-				substr := strings.Split(name, ":-")
+				substr := strings.Split(name, envDefault)
 				if len(substr) != 2 {
 					return ""
 				}
