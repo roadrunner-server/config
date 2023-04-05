@@ -17,6 +17,9 @@ const (
 
 	defaultConfigVersion string = "3"
 	prevConfigVersion    string = "2.7"
+
+	// default envs
+	envDefault = ":-"
 )
 
 type Plugin struct {
@@ -70,13 +73,13 @@ func (p *Plugin) Init() error {
 		switch t := val.(type) {
 		case string:
 			// for string just expand it
-			p.viper.Set(key, os.ExpandEnv(t))
+			p.viper.Set(key, parseEnvDefault(t))
 		case []any:
 			// for slice -> check if it's slice of strings
 			strArr := make([]string, 0, len(t))
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, os.ExpandEnv(valStr))
+					strArr = append(strArr, parseEnvDefault(valStr))
 					continue
 				}
 
@@ -99,8 +102,7 @@ func (p *Plugin) Init() error {
 			if errP != nil {
 				return errors.E(op, errP)
 			}
-
-			p.viper.Set(key, val)
+			p.viper.Set(key, parseEnvDefault(val))
 		}
 	}
 
@@ -211,4 +213,10 @@ func parseValue(value string) string {
 	}
 
 	return value
+}
+
+func parseEnvDefault(val string) string {
+	// tcp://127.0.0.1:${RPC_PORT:-36643}
+	// for envs like this, part would be tcp://127.0.0.1:
+	return ExpandVal(val, os.Getenv)
 }
