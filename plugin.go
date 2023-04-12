@@ -124,7 +124,7 @@ func (p *Plugin) Init() error {
 
 	// configuration v2.7
 	if ver.(string) == prevConfigVersion {
-		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/2.x/en")
+		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/2023.x/en#v30-configuration")
 	}
 
 	return nil
