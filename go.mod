@@ -2,22 +2,19 @@ module github.com/roadrunner-server/config/v4
 
 go 1.21
 
-toolchain go1.21.0
+toolchain go1.21.1
 
 require (
 	github.com/roadrunner-server/errors v1.3.0
 	github.com/spf13/viper v1.16.0
-	github.com/stretchr/testify v1.8.4
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
