@@ -116,7 +116,7 @@ func (p *Plugin) Init() error {
 		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
 	}
 
-	// RR includes the config feature by default starting from v2.7
+	// RR includes the config feature by default starting from v2.7.
 	// However, this is only required for tests because, starting with v2.7, the rr-binary will pass the version automatically.
 	if p.Version == "" || p.Version == "local" {
 		p.Version = defaultConfigVersion
@@ -124,7 +124,7 @@ func (p *Plugin) Init() error {
 
 	// configuration v2.7
 	if ver.(string) == prevConfigVersion {
-		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/2023.x/en#v30-configuration")
+		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/current#v30-configuration")
 	}
 
 	return nil
@@ -139,7 +139,7 @@ func (p *Plugin) Overwrite(values map[string]any) error {
 	return nil
 }
 
-// UnmarshalKey reads configuration section into configuration object.
+// UnmarshalKey reads a configuration section into a configuration object.
 func (p *Plugin) UnmarshalKey(name string, out any) error {
 	const op = errors.Op("config_plugin_unmarshal_key")
 	err := p.viper.UnmarshalKey(name, &out)
@@ -158,12 +158,12 @@ func (p *Plugin) Unmarshal(out any) error {
 	return nil
 }
 
-// Get raw config in a form of config section.
+// Get raw config in the form of a config section.
 func (p *Plugin) Get(name string) any {
 	return p.viper.Get(name)
 }
 
-// Has checks if config section exists.
+// Has checks if a config section exists.
 func (p *Plugin) Has(name string) bool {
 	return p.viper.IsSet(name)
 }
