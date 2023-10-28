@@ -31,7 +31,8 @@ type Plugin struct {
 	// user defined Flags in the form of <option>.<key> = <value>
 	// which overwrites initial config key
 	Flags []string
-
+	// ExperimentalFeatures enables experimental features
+	ExperimentalFeatures bool
 	// Timeout ...
 	Timeout time.Duration
 	// RRVersion passed from the Endure.
@@ -137,6 +138,11 @@ func (p *Plugin) Overwrite(values map[string]any) error {
 	}
 
 	return nil
+}
+
+// Experimental returns true if experimental features are enabled
+func (p *Plugin) Experimental() bool {
+	return p.ExperimentalFeatures
 }
 
 // UnmarshalKey reads a configuration section into a configuration object.
