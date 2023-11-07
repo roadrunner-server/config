@@ -80,23 +80,33 @@ func (p *Plugin) Init() error {
 		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
 	}
 
-	includeFiles := p.viper.Get(includeKey).([]any)
-	if includeFiles != nil {
-		for _, file := range includeFiles {
-			dir, _ := filepath.Split(p.Path)
-			fp := dir + file.(string)
-			config, version, err := getConfiguration(fp, p.Prefix)
-			if err != nil {
-				return errors.E(op, err)
-			}
+	ifiles := p.viper.Get(includeKey)
+	if ifiles != nil {
+		if _, ok := ifiles.([]any); !ok {
+			return errors.E(op, errors.Errorf("include should be a array of strings, actual type is: %T", ver))
+		}
 
-			if version != ver.(string) {
-				return errors.Str("version in included file must be the same like in root")
-			}
+		includeFiles := ifiles.([]any)
+		if includeFiles != nil {
+			for _, file := range includeFiles {
+				if _, ok := file.(string); !ok {
+					return errors.E(op, errors.Errorf("included file should be a string, actual type is: %T", ver))
+				}
+				dir, _ := filepath.Split(p.Path)
+				fp := dir + file.(string)
+				config, version, err := getConfiguration(fp, p.Prefix)
+				if err != nil {
+					return errors.E(op, err)
+				}
 
-			// overriding configuration
-			for key, val := range config {
-				p.viper.Set(key, val)
+				if version != ver.(string) {
+					return errors.Str("version in included file must be the same like in root")
+				}
+
+				// overriding configuration
+				for key, val := range config {
+					p.viper.Set(key, val)
+				}
 			}
 		}
 	}
