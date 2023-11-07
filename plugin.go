@@ -87,26 +87,24 @@ func (p *Plugin) Init() error {
 		}
 
 		includeFiles := ifiles.([]any)
-		if includeFiles != nil {
-			for _, file := range includeFiles {
-				if _, ok := file.(string); !ok {
-					return errors.E(op, errors.Errorf("included file should be a string, actual type is: %T", ver))
-				}
-				dir, _ := filepath.Split(p.Path)
-				fp := dir + file.(string)
-				config, version, err := getConfiguration(fp, p.Prefix)
-				if err != nil {
-					return errors.E(op, err)
-				}
+		for _, file := range includeFiles {
+			if _, ok := file.(string); !ok {
+				return errors.E(op, errors.Errorf("included file should be a string, actual type is: %T", ver))
+			}
+			dir, _ := filepath.Split(p.Path)
+			fp := dir + file.(string)
+			config, version, err := getConfiguration(fp, p.Prefix)
+			if err != nil {
+				return errors.E(op, err)
+			}
 
-				if version != ver.(string) {
-					return errors.Str("version in included file must be the same like in root")
-				}
+			if version != ver.(string) {
+				return errors.Str("version in included file must be the same like in root")
+			}
 
-				// overriding configuration
-				for key, val := range config {
-					p.viper.Set(key, val)
-				}
+			// overriding configuration
+			for key, val := range config {
+				p.viper.Set(key, val)
 			}
 		}
 	}
