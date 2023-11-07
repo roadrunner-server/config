@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 const (
 	PluginName string = "config"
 	versionKey string = "version"
+	includeKey string = "include"
 
 	defaultConfigVersion string = "3"
 	prevConfigVersion    string = "2.7"
@@ -68,6 +70,37 @@ func (p *Plugin) Init() error {
 		return errors.E(op, err)
 	}
 
+	// get configuration version
+	ver := p.viper.Get(versionKey)
+	if ver == nil {
+		return errors.Str("rr configuration file should contain a version e.g: version: 2.7")
+	}
+
+	if _, ok := ver.(string); !ok {
+		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
+	}
+
+	includeFiles := p.viper.Get(includeKey).([]any)
+	if includeFiles != nil {
+		for _, file := range includeFiles {
+			dir, _ := filepath.Split(p.Path)
+			fp := dir + file.(string)
+			config, version, err := getConfiguration(fp, p.Prefix)
+			if err != nil {
+				return errors.E(op, err)
+			}
+
+			if version != ver.(string) {
+				return errors.Str("version in included file must be the same like in root")
+			}
+
+			// overriding configuration
+			for key, val := range config {
+				p.viper.Set(key, val)
+			}
+		}
+	}
+
 	// automatically inject ENV variables using ${ENV} pattern
 	for _, key := range p.viper.AllKeys() {
 		val := p.viper.Get(key)
@@ -105,16 +138,6 @@ func (p *Plugin) Init() error {
 			}
 			p.viper.Set(key, parseEnvDefault(val))
 		}
-	}
-
-	// get configuration version
-	ver := p.viper.Get(versionKey)
-	if ver == nil {
-		return errors.Str("rr configuration file should contain a version e.g: version: 2.7")
-	}
-
-	if _, ok := ver.(string); !ok {
-		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
 	}
 
 	// RR includes the config feature by default starting from v2.7.

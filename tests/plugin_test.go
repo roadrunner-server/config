@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/roadrunner-server/config/v4"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -46,4 +47,37 @@ func TestVersions(t *testing.T) {
 
 	err := p.Init()
 	require.Error(t, err)
+}
+
+func TestIncludingConfigs(t *testing.T) {
+	p := &config.Plugin{
+		Prefix:  "rr",
+		Path:    "configs/.rr.include1.yaml",
+		Version: "2.11.3",
+	}
+
+	err := p.Init()
+	require.NoError(t, err)
+
+	// Values from .rr.include1.yaml (root file)
+	assert.Equal(t, []string([]string{".php"}), p.Get("reload.patterns"))
+
+	// Values from .rr.include1-sub1.yaml (1st included file)
+	assert.Equal(t, "127.0.0.1:15389", p.Get("http.address"))
+	assert.Equal(t, "10s", p.Get("reload.interval")) // Checking if overrided
+
+	// Values from .rr.include1-sub2.yaml (2nd included file)
+	assert.Equal(t, "console", p.Get("logs.encoding"))
+}
+
+func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
+	p := &config.Plugin{
+		Prefix:  "rr",
+		Path:    "configs/.rr.include2.yaml",
+		Version: "2.11.3",
+	}
+
+	err := p.Init()
+	require.Error(t, err)
+	assert.EqualError(t, err, "version in included file must be the same like in root")
 }
