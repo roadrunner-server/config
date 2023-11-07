@@ -80,7 +80,7 @@ func (p *Plugin) Init() error {
 		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
 	}
 
-	err = p.handleIncludedConfigurationFiles(ver.(string), op)
+	err = p.handleIncludedConfigurationFiles(ver.(string))
 	if err != nil {
 		return errors.E(op, err)
 	}
@@ -195,23 +195,23 @@ func (p *Plugin) Name() string {
 	return PluginName
 }
 
-func (p *Plugin) handleIncludedConfigurationFiles(rootVersion string, op errors.Op) error {
+func (p *Plugin) handleIncludedConfigurationFiles(rootVersion string) error {
 	ifiles := p.viper.Get(includeKey)
 	if ifiles != nil {
 		if _, ok := ifiles.([]any); !ok {
-			return errors.E(op, errors.Str("include should be a array of strings"))
+			return errors.Str("include should be a array of strings")
 		}
 
 		includeFiles := ifiles.([]any)
 		for _, file := range includeFiles {
 			if _, ok := file.(string); !ok {
-				return errors.E(op, errors.Str("included file should be a string"))
+				return errors.Str("included file should be a string")
 			}
 			dir, _ := filepath.Split(p.Path)
 			fp := dir + file.(string)
 			config, version, err := getConfiguration(fp, p.Prefix)
 			if err != nil {
-				return errors.E(op, err)
+				return err
 			}
 
 			if version != rootVersion {
