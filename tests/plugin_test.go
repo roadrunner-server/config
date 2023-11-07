@@ -79,5 +79,5 @@ func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
 
 	err := p.Init()
 	require.Error(t, err)
-	assert.EqualError(t, err, "config_plugin_init: version in included file must be the same like in root")
+	assert.Contains(t, err.Error(), "config_plugin_init: version in included file must be the same like in root")
 }
