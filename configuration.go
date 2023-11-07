@@ -8,7 +8,6 @@ import (
 )
 
 func getConfiguration(path, prefix string) (map[string]any, string, error) {
-	const op = errors.Op("sub_config_parsing")
 	viper := viper.New()
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix(prefix)
@@ -16,7 +15,7 @@ func getConfiguration(path, prefix string) (map[string]any, string, error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	err := viper.ReadInConfig()
 	if err != nil {
-		return nil, "", errors.E(op, err)
+		return nil, "", err
 	}
 
 	// get configuration version
