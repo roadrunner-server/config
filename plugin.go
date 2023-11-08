@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -31,7 +30,7 @@ type Plugin struct {
 	Type      string
 	ReadInCfg []byte
 	// user defined Flags in the form of <option>.<key> = <value>
-	// which overwrites initial config key
+	// which overwrites initial a config key
 	Flags []string
 	// ExperimentalFeatures enables experimental features
 	ExperimentalFeatures bool
@@ -70,30 +69,15 @@ func (p *Plugin) Init() error {
 		return errors.E(op, err)
 	}
 
-	// get configuration version
-	ver := p.viper.Get(versionKey)
-	if ver == nil {
-		return errors.Str("rr configuration file should contain a version e.g: version: 2.7")
-	}
-
-	if _, ok := ver.(string); !ok {
-		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
-	}
-
-	err = p.handleIncludedConfigurationFiles(ver.(string))
-	if err != nil {
-		return errors.E(op, err)
-	}
-
 	// automatically inject ENV variables using ${ENV} pattern
 	for _, key := range p.viper.AllKeys() {
 		val := p.viper.Get(key)
 		switch t := val.(type) {
 		case string:
-			// for string just expand it
+			// for string expand it
 			p.viper.Set(key, parseEnvDefault(t))
 		case []any:
-			// for slice -> check if it's slice of strings
+			// for slice -> check if it's a slice of strings
 			strArr := make([]string, 0, len(t))
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
@@ -124,6 +108,27 @@ func (p *Plugin) Init() error {
 		}
 	}
 
+	// get a configuration version
+	// we should perform this check after all overrides
+	ver := p.viper.Get(versionKey)
+	if ver == nil {
+		return errors.Str("rr configuration file should contain a version e.g: version: 3")
+	}
+
+	if _, ok := ver.(string); !ok {
+		return errors.E(op, errors.Errorf("version should be a string: `version: \"3\"`, actual type is: %T", ver))
+	}
+
+	// hide includes under the experimental flag
+	// 'include' is an experimental feature
+	// should be here because we need to perform all overrides before
+	if p.Experimental() {
+		err = p.handleInclude(ver.(string))
+		if err != nil {
+			return errors.E(op, err)
+		}
+	}
+
 	// RR includes the config feature by default starting from v2.7.
 	// However, this is only required for tests because, starting with v2.7, the rr-binary will pass the version automatically.
 	if p.Version == "" || p.Version == "local" {
@@ -138,7 +143,7 @@ func (p *Plugin) Init() error {
 	return nil
 }
 
-// Overwrite overwrites existing config with provided values
+// Overwrite overwriting existing config with provided values
 func (p *Plugin) Overwrite(values map[string]any) error {
 	for key, value := range values {
 		p.viper.Set(key, value)
@@ -193,39 +198,6 @@ func (p *Plugin) GracefulTimeout() time.Duration {
 // Name returns user-friendly plugin name
 func (p *Plugin) Name() string {
 	return PluginName
-}
-
-func (p *Plugin) handleIncludedConfigurationFiles(rootVersion string) error {
-	ifiles := p.viper.Get(includeKey)
-	if ifiles != nil {
-		if _, ok := ifiles.([]any); !ok {
-			return errors.Str("include should be a array of strings")
-		}
-
-		includeFiles := ifiles.([]any)
-		for _, file := range includeFiles {
-			if _, ok := file.(string); !ok {
-				return errors.Str("included file should be a string")
-			}
-			dir, _ := filepath.Split(p.Path)
-			fp := dir + file.(string)
-			config, version, err := getConfiguration(fp, p.Prefix)
-			if err != nil {
-				return err
-			}
-
-			if version != rootVersion {
-				return errors.Str("version in included file must be the same like in root")
-			}
-
-			// overriding configuration
-			for key, val := range config {
-				p.viper.Set(key, val)
-			}
-		}
-	}
-
-	return nil
 }
 
 func parseFlag(flag string) (string, string, error) {
