@@ -1,0 +1,16 @@
+version: "3"
+
+server:
+  command: "php php_test_files/psr-worker-bench.php"
+  relay: pipes
+
+http:
+  address: 127.0.0.1:15389
+  middleware:
+    - "sendfile"
+  pool:
+    allocate_timeout: 10s
+    num_workers: 2
+
+reload:
+  interval: 10s

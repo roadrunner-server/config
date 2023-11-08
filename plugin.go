@@ -14,6 +14,7 @@ import (
 const (
 	PluginName string = "config"
 	versionKey string = "version"
+	includeKey string = "include"
 
 	defaultConfigVersion string = "3"
 	prevConfigVersion    string = "2.7"
@@ -29,7 +30,7 @@ type Plugin struct {
 	Type      string
 	ReadInCfg []byte
 	// user defined Flags in the form of <option>.<key> = <value>
-	// which overwrites initial config key
+	// which overwrites initial a config key
 	Flags []string
 	// ExperimentalFeatures enables experimental features
 	ExperimentalFeatures bool
@@ -69,32 +70,7 @@ func (p *Plugin) Init() error {
 	}
 
 	// automatically inject ENV variables using ${ENV} pattern
-	for _, key := range p.viper.AllKeys() {
-		val := p.viper.Get(key)
-		switch t := val.(type) {
-		case string:
-			// for string just expand it
-			p.viper.Set(key, parseEnvDefault(t))
-		case []any:
-			// for slice -> check if it's slice of strings
-			strArr := make([]string, 0, len(t))
-			for i := 0; i < len(t); i++ {
-				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, parseEnvDefault(valStr))
-					continue
-				}
-
-				p.viper.Set(key, val)
-			}
-
-			// we should set the whole array
-			if len(strArr) > 0 {
-				p.viper.Set(key, strArr)
-			}
-		default:
-			p.viper.Set(key, val)
-		}
-	}
+	expandEnvViper(p.viper)
 
 	// override config Flags
 	if len(p.Flags) > 0 {
@@ -107,14 +83,25 @@ func (p *Plugin) Init() error {
 		}
 	}
 
-	// get configuration version
+	// get a configuration version
+	// we should perform this check after all overrides
 	ver := p.viper.Get(versionKey)
 	if ver == nil {
-		return errors.Str("rr configuration file should contain a version e.g: version: 2.7")
+		return errors.Str("rr configuration file should contain a version e.g: version: 3")
 	}
 
 	if _, ok := ver.(string); !ok {
-		return errors.E(op, errors.Errorf("version should be a string, actual type is: %T", ver))
+		return errors.E(op, errors.Errorf("version should be a string: `version: \"3\"`, actual type is: %T", ver))
+	}
+
+	// hide includes under the experimental flag
+	// 'include' is an experimental feature
+	// should be here because we need to perform all overrides before
+	if p.Experimental() {
+		err = p.handleInclude(ver.(string))
+		if err != nil {
+			return errors.E(op, err)
+		}
 	}
 
 	// RR includes the config feature by default starting from v2.7.
@@ -131,7 +118,7 @@ func (p *Plugin) Init() error {
 	return nil
 }
 
-// Overwrite overwrites existing config with provided values
+// Overwrite overwriting existing config with provided values
 func (p *Plugin) Overwrite(values map[string]any) error {
 	for key, value := range values {
 		p.viper.Set(key, value)

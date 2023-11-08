@@ -1,0 +1,6 @@
+version: "2.7"
+
+logs:
+  encoding: console
+  level: debug
+  mode: production

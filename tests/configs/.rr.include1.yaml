@@ -1,0 +1,9 @@
+version: "3"
+
+include:
+  - .rr.include1-sub1.yaml
+  - .rr.include1-sub2.yaml
+
+reload:
+  interval: 1s
+  patterns: [".php"]
