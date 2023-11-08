@@ -29,6 +29,9 @@ func getConfiguration(path, prefix string) (map[string]any, string, error) {
 		return nil, "", errors.Errorf("type of version should be string, actual: %T", ver)
 	}
 
+	// automatically inject ENV variables using ${ENV} pattern
+	expandEnvViper(v)
+
 	return v.AllSettings(), ver.(string), nil
 }
 
