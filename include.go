@@ -36,28 +36,25 @@ func getConfiguration(path, prefix string) (map[string]any, string, error) {
 }
 
 func (p *Plugin) handleInclude(rootVersion string) error {
-	ifiles := p.viper.Get(includeKey)
-	if ifiles != nil {
-		if _, ok := ifiles.([]string); !ok {
-			return errors.Str("include should be an array of strings")
+	ifiles := p.viper.GetStringSlice(includeKey)
+	if ifiles == nil {
+		return nil
+	}
+
+	for _, file := range ifiles {
+		dir, _ := filepath.Split(p.Path)
+		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix)
+		if err != nil {
+			return err
 		}
 
-		includeFiles := ifiles.([]string)
-		for _, file := range includeFiles {
-			dir, _ := filepath.Split(p.Path)
-			config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix)
-			if err != nil {
-				return err
-			}
+		if version != rootVersion {
+			return errors.Str("version in included file must be the same as in root")
+		}
 
-			if version != rootVersion {
-				return errors.Str("version in included file must be the same as in root")
-			}
-
-			// overriding configuration
-			for key, val := range config {
-				p.viper.Set(key, val)
-			}
+		// overriding configuration
+		for key, val := range config {
+			p.viper.Set(key, val)
 		}
 	}
 
