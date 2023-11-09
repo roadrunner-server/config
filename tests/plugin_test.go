@@ -646,3 +646,36 @@ func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "config_plugin_init: version in included file must be the same as in root")
 }
+
+func TestConfigEnvFile(t *testing.T) {
+	p := &configImpl.Plugin{
+		Prefix:               "rr",
+		Path:                 "configs/.rr-env-file.yaml",
+		ExperimentalFeatures: true,
+		Version:              "2023.3.5",
+	}
+
+	err := p.Init()
+	require.NoError(t, err)
+
+	// Check if value is get from .env file
+	assert.Equal(t, "info", p.Get("logs.level"))
+}
+
+func TestConfigEnvPriorityWithEnvFile(t *testing.T) {
+	err := os.Setenv("LOGS_LEVEL", "debug")
+	assert.NoError(t, err)
+
+	p := &configImpl.Plugin{
+		Prefix:               "rr",
+		Path:                 "configs/.rr-env-file.yaml",
+		ExperimentalFeatures: true,
+		Version:              "2023.3.5",
+	}
+
+	err = p.Init()
+	require.NoError(t, err)
+
+	// OS env has higher priority then .env file
+	assert.Equal(t, "debug", p.Get("logs.level"))
+}

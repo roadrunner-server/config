@@ -1,0 +1,9 @@
+version: '3'
+envfile: '.env.test'
+
+rpc:
+  listen: tcp://127.0.0.1:6060
+
+logs:
+  mode: development
+  level: ${LOGS_LEVEL:-error}

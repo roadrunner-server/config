@@ -8,9 +8,10 @@ import (
 
 // ExpandVal replaces ${var} or $var in the string based on the mapping function.
 // For example, os.ExpandEnv(s) is equivalent to os.Expand(s, os.Getenv).
-func ExpandVal(s string, mapping func(string) string) string {
+func ExpandVal(s string, mapping func(string) string) (result string, isChanged bool) {
 	var buf []byte
 	// ${} is all ASCII, so bytes are fine for this operation.
+	isChanged = false
 	i := 0
 	for j := 0; j < len(s); j++ {
 		if s[j] == '$' && j+1 < len(s) {
@@ -31,7 +32,7 @@ func ExpandVal(s string, mapping func(string) string) string {
 				// ${key:=default} or ${key:-val}
 				substr := strings.Split(name, envDefault)
 				if len(substr) != 2 {
-					return ""
+					return "", false
 				}
 
 				key := substr[0]
@@ -40,6 +41,9 @@ func ExpandVal(s string, mapping func(string) string) string {
 				res := mapping(key)
 				if res == "" {
 					res = defaultVal
+					isChanged = false
+				} else {
+					isChanged = true
 				}
 				buf = append(buf, res...)
 			} else {
@@ -50,9 +54,9 @@ func ExpandVal(s string, mapping func(string) string) string {
 		}
 	}
 	if buf == nil {
-		return s
+		return s, isChanged
 	}
-	return string(buf) + s[i:]
+	return string(buf) + s[i:], isChanged
 }
 
 // getShellName returns the name that begins the string and the number of bytes
@@ -85,19 +89,19 @@ func getShellName(s string) (string, int) {
 	return s[:i], i
 }
 
-func expandEnvViper(v *viper.Viper) {
+func expandEnvViper(v *viper.Viper, envFileMap map[string]string) {
 	for _, key := range v.AllKeys() {
 		val := v.Get(key)
 		switch t := val.(type) {
 		case string:
 			// for string expand it
-			v.Set(key, parseEnvDefault(t))
+			v.Set(key, parseEnvDefault(t, envFileMap))
 		case []any:
 			// for slice -> check if it's a slice of strings
 			strArr := make([]string, 0, len(t))
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, parseEnvDefault(valStr))
+					strArr = append(strArr, parseEnvDefault(valStr, envFileMap))
 					continue
 				}
 

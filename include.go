@@ -4,11 +4,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
 
-func getConfiguration(path, prefix string) (map[string]any, string, error) {
+func getConfiguration(path, prefix string, envFileMap map[string]string) (map[string]any, string, error) {
 	v := viper.New()
 	v.AutomaticEnv()
 	v.SetEnvPrefix(prefix)
@@ -30,7 +31,7 @@ func getConfiguration(path, prefix string) (map[string]any, string, error) {
 	}
 
 	// automatically inject ENV variables using ${ENV} pattern
-	expandEnvViper(v)
+	expandEnvViper(v, envFileMap)
 
 	return v.AllSettings(), ver.(string), nil
 }
@@ -43,7 +44,7 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 
 	for _, file := range ifiles {
 		dir, _ := filepath.Split(p.Path)
-		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix)
+		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix, p.envFileMap)
 		if err != nil {
 			return err
 		}
@@ -55,6 +56,20 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 		// overriding configuration
 		for key, val := range config {
 			p.viper.Set(key, val)
+		}
+	}
+
+	return nil
+}
+
+func (p *Plugin) handleEnvFile() error {
+	envFile := p.viper.GetString(envFileKey)
+	if envFile != "" {
+		var err error
+		dir, _ := filepath.Split(p.Path)
+		p.envFileMap, err = godotenv.Read(filepath.Join(dir, envFile))
+		if err != nil {
+			return err
 		}
 	}
 
