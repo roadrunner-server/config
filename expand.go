@@ -41,7 +41,6 @@ func ExpandVal(s string, mapping func(string) string) (result string, isChanged 
 				res := mapping(key)
 				if res == "" {
 					res = defaultVal
-					isChanged = false
 				} else {
 					isChanged = true
 				}
