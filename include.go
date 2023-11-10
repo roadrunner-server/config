@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func getConfiguration(path, prefix string, envFileMap map[string]string) (map[string]any, string, error) {
+func getConfiguration(path, prefix string) (map[string]any, string, error) {
 	v := viper.New()
 	v.AutomaticEnv()
 	v.SetEnvPrefix(prefix)
@@ -31,7 +31,7 @@ func getConfiguration(path, prefix string, envFileMap map[string]string) (map[st
 	}
 
 	// automatically inject ENV variables using ${ENV} pattern
-	expandEnvViper(v, envFileMap)
+	expandEnvViper(v)
 
 	return v.AllSettings(), ver.(string), nil
 }
@@ -44,7 +44,7 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 
 	for _, file := range ifiles {
 		dir, _ := filepath.Split(p.Path)
-		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix, p.envFileMap)
+		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix)
 		if err != nil {
 			return err
 		}
@@ -65,12 +65,8 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 func (p *Plugin) handleEnvFile() error {
 	envFile := p.viper.GetString(envFileKey)
 	if envFile != "" {
-		var err error
 		dir, _ := filepath.Split(p.Path)
-		p.envFileMap, err = godotenv.Read(filepath.Join(dir, envFile))
-		if err != nil {
-			return err
-		}
+		return godotenv.Load(filepath.Join(dir, envFile))
 	}
 
 	return nil

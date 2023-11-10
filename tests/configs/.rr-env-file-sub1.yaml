@@ -1,0 +1,5 @@
+version: "3"
+
+reload:
+  interval: ${RELOAD_TIME:-1s}
+  patterns: [".php"]

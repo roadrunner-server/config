@@ -8,10 +8,9 @@ import (
 
 // ExpandVal replaces ${var} or $var in the string based on the mapping function.
 // For example, os.ExpandEnv(s) is equivalent to os.Expand(s, os.Getenv).
-func ExpandVal(s string, mapping func(string) string) (result string, isChanged bool) {
+func ExpandVal(s string, mapping func(string) string) string {
 	var buf []byte
 	// ${} is all ASCII, so bytes are fine for this operation.
-	isChanged = false
 	i := 0
 	for j := 0; j < len(s); j++ {
 		if s[j] == '$' && j+1 < len(s) {
@@ -32,7 +31,7 @@ func ExpandVal(s string, mapping func(string) string) (result string, isChanged 
 				// ${key:=default} or ${key:-val}
 				substr := strings.Split(name, envDefault)
 				if len(substr) != 2 {
-					return "", false
+					return ""
 				}
 
 				key := substr[0]
@@ -41,9 +40,8 @@ func ExpandVal(s string, mapping func(string) string) (result string, isChanged 
 				res := mapping(key)
 				if res == "" {
 					res = defaultVal
-				} else {
-					isChanged = true
 				}
+
 				buf = append(buf, res...)
 			} else {
 				buf = append(buf, mapping(name)...)
@@ -53,9 +51,9 @@ func ExpandVal(s string, mapping func(string) string) (result string, isChanged 
 		}
 	}
 	if buf == nil {
-		return s, isChanged
+		return s
 	}
-	return string(buf) + s[i:], isChanged
+	return string(buf) + s[i:]
 }
 
 // getShellName returns the name that begins the string and the number of bytes
@@ -88,19 +86,19 @@ func getShellName(s string) (string, int) {
 	return s[:i], i
 }
 
-func expandEnvViper(v *viper.Viper, envFileMap map[string]string) {
+func expandEnvViper(v *viper.Viper) {
 	for _, key := range v.AllKeys() {
 		val := v.Get(key)
 		switch t := val.(type) {
 		case string:
 			// for string expand it
-			v.Set(key, parseEnvDefault(t, envFileMap))
+			v.Set(key, parseEnvDefault(t))
 		case []any:
 			// for slice -> check if it's a slice of strings
 			strArr := make([]string, 0, len(t))
 			for i := 0; i < len(t); i++ {
 				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, parseEnvDefault(valStr, envFileMap))
+					strArr = append(strArr, parseEnvDefault(valStr))
 					continue
 				}
 

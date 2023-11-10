@@ -660,6 +660,9 @@ func TestConfigEnvFile(t *testing.T) {
 
 	// Check if value is get from .env file
 	assert.Equal(t, "info", p.Get("logs.level"))
+
+	// Check if included files has also populated values from .env file
+	assert.Equal(t, "30s", p.Get("reload.interval"))
 }
 
 func TestConfigEnvPriorityWithEnvFile(t *testing.T) {

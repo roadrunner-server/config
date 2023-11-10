@@ -38,8 +38,7 @@ type Plugin struct {
 	// Timeout ...
 	Timeout time.Duration
 	// RRVersion passed from the Endure.
-	Version    string
-	envFileMap map[string]string
+	Version string
 }
 
 // Init config provider.
@@ -71,7 +70,6 @@ func (p *Plugin) Init() error {
 		return errors.E(op, err)
 	}
 
-	p.envFileMap = make(map[string]string)
 	// possibility to use env file
 	// 'envfile' is an experimental feature
 	if p.Experimental() {
@@ -82,7 +80,7 @@ func (p *Plugin) Init() error {
 	}
 
 	// automatically inject ENV variables using ${ENV} pattern
-	expandEnvViper(p.viper, p.envFileMap)
+	expandEnvViper(p.viper)
 
 	// override config Flags
 	if len(p.Flags) > 0 {
@@ -91,7 +89,7 @@ func (p *Plugin) Init() error {
 			if errP != nil {
 				return errors.E(op, errP)
 			}
-			p.viper.Set(key, parseEnvDefault(val, p.envFileMap))
+			p.viper.Set(key, parseEnvDefault(val))
 		}
 	}
 
@@ -220,25 +218,8 @@ func parseValue(value string) string {
 	return value
 }
 
-func parseEnvDefault(val string, envFileMap map[string]string) string {
+func parseEnvDefault(val string) string {
 	// tcp://127.0.0.1:${RPC_PORT:-36643}
 	// for envs like this, part would be tcp://127.0.0.1:
-
-	// env from os have highest priority
-	result, isChanged := ExpandVal(val, os.Getenv)
-	if isChanged {
-		return result
-	}
-
-	if len(envFileMap) > 0 {
-		result, _ = ExpandVal(val, func(s string) string {
-			if _, ok := envFileMap[s]; ok {
-				return envFileMap[s]
-			}
-
-			return s
-		})
-	}
-
-	return result
+	return ExpandVal(val, os.Getenv)
 }
