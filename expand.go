@@ -41,6 +41,7 @@ func ExpandVal(s string, mapping func(string) string) string {
 				if res == "" {
 					res = defaultVal
 				}
+
 				buf = append(buf, res...)
 			} else {
 				buf = append(buf, mapping(name)...)

@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
@@ -56,6 +57,16 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 		for key, val := range config {
 			p.viper.Set(key, val)
 		}
+	}
+
+	return nil
+}
+
+func (p *Plugin) handleEnvFile() error {
+	envFile := p.viper.GetString(envFileKey)
+	if envFile != "" {
+		dir, _ := filepath.Split(p.Path)
+		return godotenv.Load(filepath.Join(dir, envFile))
 	}
 
 	return nil

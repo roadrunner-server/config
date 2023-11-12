@@ -15,6 +15,7 @@ const (
 	PluginName string = "config"
 	versionKey string = "version"
 	includeKey string = "include"
+	envFileKey string = "envfile"
 
 	defaultConfigVersion string = "3"
 	prevConfigVersion    string = "2.7"
@@ -67,6 +68,15 @@ func (p *Plugin) Init() error {
 	err := p.viper.ReadInConfig()
 	if err != nil {
 		return errors.E(op, err)
+	}
+
+	// possibility to use env file
+	// 'envfile' is an experimental feature
+	if p.Experimental() {
+		err = p.handleEnvFile()
+		if err != nil {
+			return errors.E(op, err)
+		}
 	}
 
 	// automatically inject ENV variables using ${ENV} pattern
