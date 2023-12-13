@@ -7,7 +7,7 @@ toolchain go1.21.1
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/roadrunner-server/errors v1.3.0
-	github.com/spf13/viper v1.17.0
+	github.com/spf13/viper v1.18.1
 )
 
 exclude github.com/spf13/viper v1.18.0
@@ -18,7 +18,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
