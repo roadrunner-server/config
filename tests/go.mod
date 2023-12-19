@@ -5,11 +5,11 @@ go 1.21
 toolchain go1.21.5
 
 require (
-	github.com/roadrunner-server/config/v4 v4.6.3
+	github.com/roadrunner-server/config/v4 v4.6.4
 	github.com/roadrunner-server/endure/v2 v2.4.3
 	github.com/roadrunner-server/errors v1.3.0
-	github.com/roadrunner-server/logger/v4 v4.2.10
-	github.com/roadrunner-server/rpc/v4 v4.2.11
+	github.com/roadrunner-server/logger/v4 v4.2.11
+	github.com/roadrunner-server/rpc/v4 v4.2.12
 	github.com/stretchr/testify v1.8.4
 )
 
