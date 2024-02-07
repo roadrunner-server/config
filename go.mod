@@ -1,8 +1,8 @@
 module github.com/roadrunner-server/config/v4
 
-go 1.21
+go 1.22
 
-toolchain go1.21.1
+toolchain go1.22.0
 
 require (
 	github.com/joho/godotenv v1.5.1
@@ -29,7 +29,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240205201215-2c58cdc269a3 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
