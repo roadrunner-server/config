@@ -25,8 +25,9 @@ const (
 )
 
 type Plugin struct {
-	viper     *viper.Viper
-	Path      string
+	viper *viper.Viper
+	Path  string
+	// Deprecated: Prefix is deprecated and will be removed in the next major version.
 	Prefix    string
 	Type      string
 	ReadInCfg []byte
@@ -51,13 +52,6 @@ func (p *Plugin) Init() error {
 		return p.viper.ReadConfig(bytes.NewBuffer(p.ReadInCfg))
 	}
 
-	// read in environment variables that match
-	p.viper.AutomaticEnv()
-	if p.Prefix == "" {
-		return errors.E(op, errors.Str("prefix should be set"))
-	}
-
-	p.viper.SetEnvPrefix(p.Prefix)
 	if p.Path == "" {
 		return errors.E(op, errors.Str("path should be set"))
 	}
