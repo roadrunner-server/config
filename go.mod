@@ -5,7 +5,7 @@ go 1.22.3
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/roadrunner-server/errors v1.4.0
-	github.com/spf13/viper v1.18.2
+	github.com/spf13/viper v1.19.0
 )
 
 exclude github.com/spf13/viper v1.18.0
