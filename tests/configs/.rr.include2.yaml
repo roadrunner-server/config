@@ -1,7 +1,7 @@
 version: "3"
 
 include:
-  - .rr.include2-sub1.yaml
+  - configs/.rr.include2-sub1.yaml
 
 reload:
   interval: 1s

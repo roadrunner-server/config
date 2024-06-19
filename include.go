@@ -2,19 +2,15 @@ package config
 
 import (
 	"path/filepath"
-	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
 
-func getConfiguration(path, prefix string) (map[string]any, string, error) {
+func getConfiguration(path string) (map[string]any, string, error) {
 	v := viper.New()
-	v.AutomaticEnv()
-	v.SetEnvPrefix(prefix)
 	v.SetConfigFile(path)
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	err := v.ReadInConfig()
 	if err != nil {
 		return nil, "", err
@@ -43,8 +39,7 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 	}
 
 	for _, file := range ifiles {
-		dir, _ := filepath.Split(p.Path)
-		config, version, err := getConfiguration(filepath.Join(dir, file), p.Prefix)
+		config, version, err := getConfiguration(file)
 		if err != nil {
 			return err
 		}
