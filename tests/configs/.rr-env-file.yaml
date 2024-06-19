@@ -1,8 +1,8 @@
-version: '3'
-envfile: '.env.test'
+version: "3"
+envfile: ".env.test"
 
 include:
-  - .rr-env-file-sub1.yaml
+  - configs/.rr-env-file-sub1.yaml
 
 rpc:
   listen: tcp://127.0.0.1:6060

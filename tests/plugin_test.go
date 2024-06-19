@@ -17,12 +17,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const cfgPath = "configs/.rr.yaml"
+
 func TestViperProvider_Init(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = nil
 
 	err := cont.Register(vp)
@@ -81,8 +82,7 @@ func TestViperProvider_OldConfig(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{
-		Path:   "configs/.rr-old.yaml",
-		Prefix: "rr",
+		Path: "configs/.rr-old.yaml",
 	}
 
 	err := cont.Register(vp)
@@ -149,8 +149,7 @@ func TestConfigOverwriteExpandEnv(t *testing.T) {
 	container := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = []string{"rpc.listen=tcp://${RPC_VAL:-127.0.0.1:6001}"}
 
 	err := container.RegisterAll(
@@ -171,8 +170,7 @@ func TestConfigOverwriteExpandEnv(t *testing.T) {
 func TestConfigOverwriteFail(t *testing.T) {
 	container := endure.New(slog.LevelDebug)
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = []string{"rpc.listen=tcp//not_exist"}
 
 	err := container.RegisterAll(
@@ -190,8 +188,7 @@ func TestConfigOverwriteFail(t *testing.T) {
 func TestConfigOverwriteFail_2(t *testing.T) {
 	container := endure.New(slog.LevelDebug)
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = []string{"rpc.listen="}
 
 	err := container.RegisterAll(
@@ -210,8 +207,7 @@ func TestConfigOverwriteFail_3(t *testing.T) {
 	container := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = []string{"="}
 
 	err := container.RegisterAll(
@@ -230,8 +226,7 @@ func TestConfigOverwriteValid(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = []string{"rpc.listen=tcp://127.0.0.1:36643"}
 
 	err := cont.RegisterAll(
@@ -296,7 +291,6 @@ func TestConfigEnvVariables(t *testing.T) {
 
 	vp := &configImpl.Plugin{}
 	vp.Path = "configs/.rr-env.yaml"
-	vp.Prefix = "rr"
 
 	err = cont.RegisterAll(
 		&logger.Plugin{},
@@ -357,7 +351,6 @@ func TestConfigEnvVariables2(t *testing.T) {
 
 	vp := &configImpl.Plugin{}
 	vp.Path = "configs/.rr-env2.yaml"
-	vp.Prefix = "rr"
 
 	err := cont.RegisterAll(
 		&logger.Plugin{},
@@ -420,7 +413,6 @@ func TestConfigEnvVariables3(t *testing.T) {
 
 	vp := &configImpl.Plugin{}
 	vp.Path = "configs/.rr-env3.yaml"
-	vp.Prefix = "rr"
 
 	err := cont.RegisterAll(
 		&logger.Plugin{},
@@ -484,7 +476,6 @@ func TestConfigEnvVariablesFail(t *testing.T) {
 
 	vp := &configImpl.Plugin{}
 	vp.Path = "configs/.rr-env.yaml"
-	vp.Prefix = "rr"
 
 	err = container.RegisterAll(
 		&logger.Plugin{},
@@ -505,8 +496,7 @@ func TestConfigProvider_GeneralSection(t *testing.T) {
 	cont := endure.New(slog.LevelDebug)
 
 	vp := &configImpl.Plugin{}
-	vp.Path = "configs/.rr.yaml"
-	vp.Prefix = "rr"
+	vp.Path = cfgPath
 	vp.Flags = nil
 	vp.Timeout = time.Second * 10
 
@@ -574,7 +564,6 @@ func TestEnvArr(t *testing.T) {
 	require.NoError(t, syscall.Setenv("REDIS_HOST_1", "localhost:2999"))
 	require.NoError(t, syscall.Setenv("REDIS_HOST_2", "localhost:2998"))
 	p := &configImpl.Plugin{
-		Prefix:  "rr",
 		Path:    "configs/.rr-env-arr.yaml",
 		Version: "2.11.3",
 	}
@@ -601,7 +590,6 @@ func TestEnvArr(t *testing.T) {
 func TestVersions(t *testing.T) {
 	// rr 2.10, config no version
 	p := &configImpl.Plugin{
-		Prefix:  "rr",
 		Path:    "configs/.rr-no-version.yaml",
 		Version: "2.10",
 	}
@@ -612,7 +600,6 @@ func TestVersions(t *testing.T) {
 
 func TestIncludingConfigs(t *testing.T) {
 	p := &configImpl.Plugin{
-		Prefix:               "rr",
 		ExperimentalFeatures: true,
 		Path:                 "configs/.rr.include1.yaml",
 		Version:              "2023.3.5",
@@ -636,7 +623,6 @@ func TestIncludingConfigs(t *testing.T) {
 
 func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
 	p := &configImpl.Plugin{
-		Prefix:               "rr",
 		ExperimentalFeatures: true,
 		Path:                 "configs/.rr.include2.yaml",
 		Version:              "2023.3.4",
@@ -649,7 +635,6 @@ func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
 
 func TestConfigEnvFile(t *testing.T) {
 	p := &configImpl.Plugin{
-		Prefix:               "rr",
 		Path:                 "configs/.rr-env-file.yaml",
 		ExperimentalFeatures: true,
 		Version:              "2023.3.5",
@@ -670,7 +655,6 @@ func TestConfigEnvPriorityWithEnvFile(t *testing.T) {
 	assert.NoError(t, err)
 
 	p := &configImpl.Plugin{
-		Prefix:               "rr",
 		Path:                 "configs/.rr-env-file.yaml",
 		ExperimentalFeatures: true,
 		Version:              "2023.3.5",

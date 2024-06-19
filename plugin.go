@@ -57,8 +57,6 @@ func (p *Plugin) Init() error {
 	}
 
 	p.viper.SetConfigFile(p.Path)
-	p.viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
 	err := p.viper.ReadInConfig()
 	if err != nil {
 		return errors.E(op, err)
@@ -73,7 +71,7 @@ func (p *Plugin) Init() error {
 		}
 	}
 
-	// automatically inject ENV variables using ${ENV} pattern
+	// automatically inject ENV variables using ${ENV}/$ENV pattern
 	expandEnvViper(p.viper)
 
 	// override config Flags
