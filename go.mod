@@ -1,6 +1,6 @@
-module github.com/roadrunner-server/config/v4
+module github.com/roadrunner-server/config/v5
 
-go 1.22.4
+go 1.22.5
 
 require (
 	github.com/joho/godotenv v1.5.1
