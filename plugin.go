@@ -96,14 +96,10 @@ func (p *Plugin) Init() error {
 		return errors.E(op, errors.Errorf("version should be a string: `version: \"3\"`, actual type is: %T", ver))
 	}
 
-	// hide includes under the experimental flag
-	// 'include' is an experimental feature
-	// should be here because we need to perform all overrides before
-	if p.Experimental() {
-		err = p.handleInclude(ver.(string))
-		if err != nil {
-			return errors.E(op, err)
-		}
+	// handle includes syntax
+	err = p.handleInclude(ver.(string))
+	if err != nil {
+		return errors.E(op, err)
 	}
 
 	// RR includes the config feature by default starting from v2.7.
@@ -114,7 +110,7 @@ func (p *Plugin) Init() error {
 
 	// configuration v2.7
 	if ver.(string) == prevConfigVersion {
-		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://roadrunner.dev/docs/plugins-config/current#v30-configuration")
+		println("please, update your configuration version from version: '2.7' to version: '3', see changes here: https://docs.roadrunner.dev/docs/general/compatibility#v3.0-configuration-and-rr-v2023.x.x")
 	}
 
 	return nil
