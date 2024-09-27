@@ -8,8 +8,8 @@ require (
 	github.com/roadrunner-server/config/v5 v5.0.0
 	github.com/roadrunner-server/endure/v2 v2.6.1
 	github.com/roadrunner-server/errors v1.4.1
-	github.com/roadrunner-server/logger/v5 v5.0.3
-	github.com/roadrunner-server/rpc/v5 v5.0.3
+	github.com/roadrunner-server/logger/v5 v5.0.4
+	github.com/roadrunner-server/rpc/v5 v5.0.4
 	github.com/stretchr/testify v1.9.0
 )
 
