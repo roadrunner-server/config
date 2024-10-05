@@ -2,8 +2,6 @@ package config
 
 import (
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 // ExpandVal replaces ${var} or $var in the string based on the mapping function.
@@ -84,35 +82,6 @@ func getShellName(s string) (string, int) {
 
 	}
 	return s[:i], i
-}
-
-func expandEnvViper(v *viper.Viper) {
-	for _, key := range v.AllKeys() {
-		val := v.Get(key)
-		switch t := val.(type) {
-		case string:
-			// for string expand it
-			v.Set(key, parseEnvDefault(t))
-		case []any:
-			// for slice -> check if it's a slice of strings
-			strArr := make([]string, 0, len(t))
-			for i := 0; i < len(t); i++ {
-				if valStr, ok := t[i].(string); ok {
-					strArr = append(strArr, parseEnvDefault(valStr))
-					continue
-				}
-
-				v.Set(key, val)
-			}
-
-			// we should set the whole array
-			if len(strArr) > 0 {
-				v.Set(key, strArr)
-			}
-		default:
-			v.Set(key, val)
-		}
-	}
 }
 
 // isShellSpecialVar reports whether the character identifies a special

@@ -26,15 +26,15 @@ func getConfiguration(path string) (map[string]any, string, error) {
 		return nil, "", errors.Errorf("type of version should be string, actual: %T", ver)
 	}
 
-	// automatically inject ENV variables using ${ENV} pattern
-	expandEnvViper(v)
-
 	return v.AllSettings(), ver.(string), nil
 }
 
 func (p *Plugin) handleInclude(rootVersion string) error {
-	ifiles := p.viper.GetStringSlice(includeKey)
-	if ifiles == nil {
+	var ifiles []string
+	if err := p.viper.UnmarshalKey(includeKey, &ifiles, p.unmarshalOpts()); err != nil {
+		return err
+	}
+	if len(ifiles) == 0 {
 		return nil
 	}
 
@@ -58,7 +58,10 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 }
 
 func (p *Plugin) handleEnvFile() error {
-	envFile := p.viper.GetString(envFileKey)
+	var envFile string
+	if err := p.viper.UnmarshalKey(envFileKey, &envFile, p.unmarshalOpts()); err != nil {
+		return err
+	}
 	if envFile != "" {
 		dir, _ := filepath.Split(p.Path)
 		return godotenv.Load(filepath.Join(dir, envFile))
