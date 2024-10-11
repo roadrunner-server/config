@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/roadrunner-server/errors"
 	"github.com/spf13/viper"
 )
@@ -71,9 +73,6 @@ func (p *Plugin) Init() error {
 		}
 	}
 
-	// automatically inject ENV variables using ${ENV}/$ENV pattern
-	expandEnvViper(p.viper)
-
 	// override config Flags
 	if len(p.Flags) > 0 {
 		for _, f := range p.Flags {
@@ -81,7 +80,7 @@ func (p *Plugin) Init() error {
 			if errP != nil {
 				return errors.E(op, errP)
 			}
-			p.viper.Set(key, parseEnvDefault(val))
+			p.viper.Set(key, val)
 		}
 	}
 
@@ -133,7 +132,7 @@ func (p *Plugin) Experimental() bool {
 // UnmarshalKey reads a configuration section into a configuration object.
 func (p *Plugin) UnmarshalKey(name string, out any) error {
 	const op = errors.Op("config_plugin_unmarshal_key")
-	err := p.viper.UnmarshalKey(name, &out)
+	err := p.viper.UnmarshalKey(name, &out, p.unmarshalOpts())
 	if err != nil {
 		return errors.E(op, err)
 	}
@@ -142,11 +141,24 @@ func (p *Plugin) UnmarshalKey(name string, out any) error {
 
 func (p *Plugin) Unmarshal(out any) error {
 	const op = errors.Op("config_plugin_unmarshal")
-	err := p.viper.Unmarshal(&out)
+	err := p.viper.Unmarshal(&out, p.unmarshalOpts())
 	if err != nil {
 		return errors.E(op, err)
 	}
 	return nil
+}
+
+func (p *Plugin) unmarshalOpts() viper.DecoderConfigOption {
+	return viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
+		mapstructure.DecodeHookFuncValue(func(from, to reflect.Value) (interface{}, error) {
+			if from.Kind() == reflect.String {
+				return parseEnvDefault(from.String()), nil
+			}
+			return from.Interface(), nil
+		}),
+		mapstructure.StringToTimeDurationHookFunc(),
+		mapstructure.StringToSliceHookFunc(","),
+	))
 }
 
 // Get raw config in the form of a config section.
