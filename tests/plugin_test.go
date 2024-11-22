@@ -11,8 +11,11 @@ import (
 
 	configImpl "github.com/roadrunner-server/config/v5"
 	"github.com/roadrunner-server/endure/v2"
+	"github.com/roadrunner-server/kv/v5"
 	"github.com/roadrunner-server/logger/v5"
+	"github.com/roadrunner-server/memory/v5"
 	"github.com/roadrunner-server/rpc/v5"
+	"github.com/roadrunner-server/server/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -621,16 +624,78 @@ func TestIncludingConfigs(t *testing.T) {
 	assert.Equal(t, "console", p.Get("logs.encoding"))
 }
 
-func TestErrorWhenIncludedConfigHaveDifferentVersionThenRoot(t *testing.T) {
-	p := &configImpl.Plugin{
+func TestIncludingConfigsIssue2017(t *testing.T) {
+	cont := endure.New(slog.LevelDebug)
+
+	cfg := &configImpl.Plugin{
+		Version:              "2023.3.0",
 		ExperimentalFeatures: true,
-		Path:                 "configs/.rr.include2.yaml",
-		Version:              "2023.3.4",
+		Path:                 "configs/include1/.rr-include.yaml",
 	}
 
-	err := p.Init()
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "config_plugin_init: version in included file must be the same as in root")
+	err := cont.RegisterAll(
+		cfg,
+		&rpc.Plugin{},
+		&logger.Plugin{},
+		&server.Plugin{},
+		&kv.Plugin{},
+		&memory.Plugin{},
+	)
+	assert.NoError(t, err)
+
+	err = cont.Init()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.True(t, cfg.Has("kv.roadrunner.driver"))
+	assert.Equal(t, "memory", cfg.Get("kv.roadrunner.driver").(string))
+
+	require.True(t, cfg.Has("rpc.listen"))
+	assert.Equal(t, "tcp://127.0.0.1:6010", cfg.Get("rpc.listen").(string))
+
+	ch, err := cont.Serve()
+	assert.NoError(t, err)
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+
+	stopCh := make(chan struct{}, 1)
+
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case e := <-ch:
+				assert.Fail(t, "error", e.Error.Error())
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+			case <-sig:
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+				return
+			case <-stopCh:
+				// timeout
+				err = cont.Stop()
+				if err != nil {
+					assert.FailNow(t, "error", err.Error())
+				}
+				return
+			}
+		}
+	}()
+
+	time.Sleep(time.Second * 1)
+
+	stopCh <- struct{}{}
+	wg.Wait()
 }
 
 func TestConfigEnvFile(t *testing.T) {
