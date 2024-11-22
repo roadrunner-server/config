@@ -625,22 +625,6 @@ func TestIncludingConfigs(t *testing.T) {
 }
 
 func TestIncludingConfigsIssue2017(t *testing.T) {
-	// p := &configImpl.Plugin{
-	// 	ExperimentalFeatures: true,
-	// 	Path:                 "configs/include1/.rr-include.yaml",
-	// 	Version:              "2024.2.0",
-	// }
-	//
-	// err := p.Init()
-	// require.NoError(t, err)
-	//
-	// val := p.Get("kv.roadrunner.driver")
-	// if v, ok := val.(string); ok {
-	// 	assert.Equal(t, "memory", v)
-	// } else {
-	// 	t.Fatalf("unexpected type")
-	// }
-
 	cont := endure.New(slog.LevelDebug)
 
 	cfg := &configImpl.Plugin{
@@ -664,8 +648,8 @@ func TestIncludingConfigsIssue2017(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// require.True(t, cfg.Has("kv.roadrunner.config"))
-	// assert.Equal(t, "memory", cfg.Get("kv.roadrunner.config").(string))
+	require.True(t, cfg.Has("kv.roadrunner.driver"))
+	assert.Equal(t, "memory", cfg.Get("kv.roadrunner.driver").(string))
 
 	require.True(t, cfg.Has("rpc.listen"))
 	assert.Equal(t, "tcp://127.0.0.1:6010", cfg.Get("rpc.listen").(string))
