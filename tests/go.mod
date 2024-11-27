@@ -13,7 +13,7 @@ require (
 	github.com/roadrunner-server/memory/v5 v5.1.0
 	github.com/roadrunner-server/rpc/v5 v5.0.4
 	github.com/roadrunner-server/server/v5 v5.1.2
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 replace github.com/roadrunner-server/config/v5 => ../
@@ -38,7 +38,7 @@ require (
 	github.com/roadrunner-server/api/v4 v4.16.0 // indirect
 	github.com/roadrunner-server/events v1.0.1 // indirect
 	github.com/roadrunner-server/goridge/v3 v3.8.3 // indirect
-	github.com/roadrunner-server/pool v1.0.2 // indirect
+	github.com/roadrunner-server/pool v1.0.3 // indirect
 	github.com/roadrunner-server/tcplisten v1.5.1 // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/spf13/viper v1.19.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
-	github.com/tklauser/numcpus v0.8.0 // indirect
+	github.com/tklauser/numcpus v0.9.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
