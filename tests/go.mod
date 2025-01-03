@@ -8,11 +8,11 @@ require (
 	github.com/roadrunner-server/config/v5 v5.0.0
 	github.com/roadrunner-server/endure/v2 v2.6.1
 	github.com/roadrunner-server/errors v1.4.1
-	github.com/roadrunner-server/kv/v5 v5.2.0
-	github.com/roadrunner-server/logger/v5 v5.1.0
-	github.com/roadrunner-server/memory/v5 v5.2.0
-	github.com/roadrunner-server/rpc/v5 v5.1.0
-	github.com/roadrunner-server/server/v5 v5.2.1
+	github.com/roadrunner-server/kv/v5 v5.2.1
+	github.com/roadrunner-server/logger/v5 v5.1.1
+	github.com/roadrunner-server/memory/v5 v5.2.1
+	github.com/roadrunner-server/rpc/v5 v5.1.1
+	github.com/roadrunner-server/server/v5 v5.2.2
 	github.com/stretchr/testify v1.10.0
 )
 
@@ -66,7 +66,7 @@ require (
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/protobuf v1.36.0 // indirect
+	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
