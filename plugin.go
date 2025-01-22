@@ -173,6 +173,12 @@ func (p *Plugin) Name() string {
 	return PluginName
 }
 
+func (p *Plugin) RPC() any {
+	return &rpc{
+		pl: p,
+	}
+}
+
 func parseFlag(flag string) (string, string, error) {
 	const op = errors.Op("parse_flag")
 	if !strings.Contains(flag, "=") {
