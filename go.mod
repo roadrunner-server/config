@@ -1,4 +1,4 @@
-module github.com/roadrunner-server/config/v5
+module github.com/shellphy/config/v5
 
 go 1.23
 
