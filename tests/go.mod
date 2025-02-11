@@ -8,11 +8,11 @@ require (
 	github.com/roadrunner-server/config/v5 v5.0.0
 	github.com/roadrunner-server/endure/v2 v2.6.1
 	github.com/roadrunner-server/errors v1.4.1
-	github.com/roadrunner-server/kv/v5 v5.2.2
-	github.com/roadrunner-server/logger/v5 v5.1.2
-	github.com/roadrunner-server/memory/v5 v5.2.2
-	github.com/roadrunner-server/rpc/v5 v5.1.2
-	github.com/roadrunner-server/server/v5 v5.2.3
+	github.com/roadrunner-server/kv/v5 v5.2.3
+	github.com/roadrunner-server/logger/v5 v5.1.3
+	github.com/roadrunner-server/memory/v5 v5.2.3
+	github.com/roadrunner-server/rpc/v5 v5.1.3
+	github.com/roadrunner-server/server/v5 v5.2.4
 	github.com/stretchr/testify v1.10.0
 )
 
@@ -62,7 +62,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/exp v0.0.0-20250207012021-f9890c6ad9f3 // indirect
+	golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
