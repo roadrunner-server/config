@@ -33,7 +33,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/roadrunner-server/api/v4 v4.18.1 // indirect
+	github.com/roadrunner-server/api/v4 v4.19.0 // indirect
 	github.com/roadrunner-server/events v1.0.1 // indirect
 	github.com/roadrunner-server/goridge/v3 v3.8.3 // indirect
 	github.com/roadrunner-server/pool v1.1.3 // indirect
