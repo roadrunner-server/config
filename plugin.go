@@ -76,12 +76,20 @@ func (p *Plugin) Init() error {
 
 	// override config Flags
 	if len(p.Flags) > 0 {
+		flagValues := make(map[string][]string, len(p.Flags))
 		for _, f := range p.Flags {
 			key, val, errP := parseFlag(f)
 			if errP != nil {
 				return errors.E(op, errP)
 			}
-			p.viper.Set(key, parseEnvDefault(val))
+			flagValues[key] = append(flagValues[key], parseEnvDefault(val))
+		}
+		for key, val := range flagValues {
+			if len(val) == 1 {
+				p.viper.Set(key, val[0])
+			} else {
+				p.viper.Set(key, val)
+			}
 		}
 	}
 

@@ -731,3 +731,15 @@ func TestConfigEnvPriorityWithEnvFile(t *testing.T) {
 	// OS env has higher priority then .env file
 	assert.Equal(t, "debug", p.Get("logs.level"))
 }
+
+func TestOverrideSlices(t *testing.T) {
+	p := &configImpl.Plugin{
+		Path:  "configs/.rr-slice-config.yaml",
+		Flags: []string{"http.middleware=headers", "http.middleware=gzip"},
+	}
+
+	err := p.Init()
+	assert.NoError(t, err)
+
+	assert.Equal(t, []string{"headers", "gzip"}, p.Get("http.middleware"))
+}
