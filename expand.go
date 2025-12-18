@@ -27,7 +27,7 @@ func ExpandVal(s string, mapping func(string) string) string {
 				// name. Leave the dollar character untouched.
 				buf = append(buf, s[j])
 				// parse default syntax
-			} else if idx := strings.Index(s, envDefault); idx != -1 {
+			} else if found := strings.Contains(s, envDefault); found {
 				// ${key:=default} or ${key:-val}
 				substr := strings.Split(name, envDefault)
 				if len(substr) != 2 {
