@@ -13,6 +13,7 @@ linters:
     - exhaustive
     - gochecknoglobals
     - gochecknoinits
+    - gocognit
     - goconst
     - gocritic
     - goprintffuncname

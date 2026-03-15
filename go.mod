@@ -1,4 +1,4 @@
-module github.com/roadrunner-server/config/v5
+module github.com/roadrunner-server/config/v6
 
 go 1.26
 

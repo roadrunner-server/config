@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	configImpl "github.com/roadrunner-server/config/v5"
+	configImpl "github.com/roadrunner-server/config/v6"
 	"github.com/roadrunner-server/endure/v2"
 	"github.com/roadrunner-server/kv/v5"
 	"github.com/roadrunner-server/logger/v5"

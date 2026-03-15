@@ -5,7 +5,7 @@ go 1.26
 toolchain go1.26.0
 
 require (
-	github.com/roadrunner-server/config/v5 v5.1.9
+	github.com/roadrunner-server/config/v6 v6.0.0
 	github.com/roadrunner-server/endure/v2 v2.6.2
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/roadrunner-server/kv/v5 v5.2.9
@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 )
 
-replace github.com/roadrunner-server/config/v5 => ../
+replace github.com/roadrunner-server/config/v6 => ../
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
