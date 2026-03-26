@@ -6,7 +6,7 @@ toolchain go1.26.0
 
 require (
 	github.com/joho/godotenv v1.5.1
-	github.com/roadrunner-server/errors v1.4.1
+	github.com/roadrunner-server/errors v1.5.0
 	github.com/spf13/viper v1.21.0
 )
 
