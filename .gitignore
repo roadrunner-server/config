@@ -17,3 +17,4 @@ vendor/
 **/composer.lock
 .idea
 .DS_Store
+**/.claude/settings.local.json
