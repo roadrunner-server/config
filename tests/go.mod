@@ -8,11 +8,11 @@ require (
 	github.com/roadrunner-server/config/v6 v6.0.0
 	github.com/roadrunner-server/endure/v2 v2.6.2
 	github.com/roadrunner-server/errors v1.5.0
-	github.com/roadrunner-server/kv/v5 v5.2.9
-	github.com/roadrunner-server/logger/v5 v5.1.9
-	github.com/roadrunner-server/memory/v5 v5.2.9
-	github.com/roadrunner-server/rpc/v5 v5.1.9
-	github.com/roadrunner-server/server/v5 v5.2.10
+	github.com/roadrunner-server/kv/v6 v6.0.0-beta.4
+	github.com/roadrunner-server/logger/v6 v6.0.0-beta.3
+	github.com/roadrunner-server/memory/v6 v6.0.0-beta.3
+	github.com/roadrunner-server/rpc/v6 v6.0.0-beta.3
+	github.com/roadrunner-server/server/v6 v6.0.0-beta.5
 	github.com/stretchr/testify v1.11.1
 )
 
@@ -27,17 +27,17 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/roadrunner-server/api/v4 v4.24.0 // indirect
+	github.com/roadrunner-server/api-go/v6 v6.0.0-beta.4 // indirect
+	github.com/roadrunner-server/api-plugins/v6 v6.0.0-beta.2 // indirect
 	github.com/roadrunner-server/events v1.0.1 // indirect
-	github.com/roadrunner-server/goridge/v3 v3.8.3 // indirect
-	github.com/roadrunner-server/pool v1.1.3 // indirect
+	github.com/roadrunner-server/goridge/v4 v4.0.0-beta.1 // indirect
+	github.com/roadrunner-server/pool/v2 v2.0.0-beta.1 // indirect
 	github.com/roadrunner-server/tcplisten v1.5.2 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
@@ -48,8 +48,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
-	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
-	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/propagators/jaeger v1.43.0 // indirect
@@ -65,6 +63,5 @@ require (
 	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/genproto v0.0.0-20260504160031-60b97b32f348 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

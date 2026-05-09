@@ -11,11 +11,11 @@ import (
 
 	configImpl "github.com/roadrunner-server/config/v6"
 	"github.com/roadrunner-server/endure/v2"
-	"github.com/roadrunner-server/kv/v5"
-	"github.com/roadrunner-server/logger/v5"
-	"github.com/roadrunner-server/memory/v5"
-	"github.com/roadrunner-server/rpc/v5"
-	"github.com/roadrunner-server/server/v5"
+	"github.com/roadrunner-server/kv/v6"
+	"github.com/roadrunner-server/logger/v6"
+	"github.com/roadrunner-server/memory/v6"
+	"github.com/roadrunner-server/rpc/v6"
+	"github.com/roadrunner-server/server/v6"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
