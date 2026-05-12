@@ -52,8 +52,8 @@ github.com/roadrunner-server/kv/v6 v6.0.0-beta.4 h1:1AfYzkmDgIKNOUKu1D3E0aRSjYbl
 github.com/roadrunner-server/kv/v6 v6.0.0-beta.4/go.mod h1:s8RkJpMWb+e/D/nDY30/Oi5ItEDSi8t9SOeZ6T74fUQ=
 github.com/roadrunner-server/logger/v6 v6.0.0-beta.3 h1:eoJKXAUSyykDfVX6eTUhmAn6Y8pS/LyI5fDP4H+G5rQ=
 github.com/roadrunner-server/logger/v6 v6.0.0-beta.3/go.mod h1:MwHb3AbltHYtu7nRpml5NeYu7O+W8rCpDBeNTTEoE1M=
-github.com/roadrunner-server/memory/v6 v6.0.0-beta.3 h1:QOeb/CG/brtEM6ASTdIOuTK2ULZq+nIodzRdoeIu+Ik=
-github.com/roadrunner-server/memory/v6 v6.0.0-beta.3/go.mod h1:T+em0XdZ4hYrlvmfckbFoH4PTSYYhuUp6kOPF5Bqm88=
+github.com/roadrunner-server/memory/v6 v6.0.0-beta.4 h1:jeqC7VH/FBuBcXTfOhPU/GafVUMS+OWNE3YkMKCXnQw=
+github.com/roadrunner-server/memory/v6 v6.0.0-beta.4/go.mod h1:T+em0XdZ4hYrlvmfckbFoH4PTSYYhuUp6kOPF5Bqm88=
 github.com/roadrunner-server/pool/v2 v2.0.0-beta.1 h1:jpYXFtdD6QGAdAGPgMxrNi3j1CegCRpb2y+A+3GnXFA=
 github.com/roadrunner-server/pool/v2 v2.0.0-beta.1/go.mod h1:Bo1wT7RtL3eyQHXBUohNhtj/yAmRt6Rq8smuBg5pWkY=
 github.com/roadrunner-server/rpc/v6 v6.0.0-beta.3 h1:hvVEDIMB9MKI8uWX++MrBzHRzq404ygU0fDs6U2V/3Y=
