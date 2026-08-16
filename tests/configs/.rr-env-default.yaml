@@ -1,0 +1,8 @@
+version: "3"
+
+rpc:
+  listen: ${CONFIG_TEST_RPC_DEFAULT:-tcp://127.0.0.1:6396}
+
+logs:
+  mode: ${CONFIG_TEST_LOGS_MODE:-development}
+  level: debug

@@ -1,7 +1,7 @@
-version: '3'
+version: "3"
 
 rpc:
-  listen: ${SUPER_RPC_ENV}
+  listen: ${CONFIG_TEST_RPC_ADDR}
 
 logs:
   mode: development

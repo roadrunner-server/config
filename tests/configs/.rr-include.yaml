@@ -1,0 +1,9 @@
+version: "3"
+
+include:
+  - configs/.rr-include-rpc.yaml
+  - configs/.rr-include-logs.yaml
+
+logs:
+  mode: development
+  level: error

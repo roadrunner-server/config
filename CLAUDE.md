@@ -9,16 +9,20 @@ RoadRunner **config** plugin (v6). It reads YAML configuration files for the Roa
 ## Build & Test Commands
 
 ```bash
-# Run all tests (from repo root — uses go.work)
-make test                    # or: go test -v -race -tags=debug ./...
+# Run both modules (from repo root — uses go.work)
+make test
 
-# Run tests with coverage (matches CI)
-cd tests && go test -timeout 20m -v -race -cover -tags=debug \
-  -failfast -coverpkg=github.com/roadrunner-server/config/v6/... \
+# Unit tests with coverage (matches CI)
+go test -timeout 20m -v -race -cover -coverpkg=./... \
+  -coverprofile=coverage.out -covermode=atomic ./...
+
+# Integration tests with coverage (matches CI)
+cd tests && go test -timeout 20m -v -race -cover \
+  -coverpkg=github.com/roadrunner-server/config/v6/... \
   -coverprofile=coverage.out -covermode=atomic ./...
 
 # Run a single test
-cd tests && go test -v -race -tags=debug -run TestViperProvider_Init ./...
+go test -v -race -run TestExpandVal ./...
 
 # Lint
 golangci-lint run --build-tags=race ./...
@@ -28,10 +32,10 @@ golangci-lint run --build-tags=race ./...
 
 Uses `go.work` with two modules:
 
-- **`.`** — the plugin library itself (`package config`): `plugin.go`, `expand.go`, `include.go`
+- **`.`** — the plugin library itself (`package config`): `plugin.go`, `expand.go`, `include.go`, plus the unit tests `plugin_test.go`, `expand_test.go`, `include_test.go` and the shared fixture builders in `fixtures_test.go`
 - **`./tests`** — separate module for integration tests; has its own `go.mod` with `replace github.com/roadrunner-server/config/v6 => ../` so it always tests the local code
 
-All test files, test fixtures (YAML configs, `.env` files, PHP test files), and mock plugins (`plugin1.go`–`plugin5.go`) live under `tests/`.
+The two tiers split by what they need. The unit tier drives `Plugin.Init` directly and writes its YAML and `.env` fixtures into `t.TempDir()`, so it needs no container and leaves nothing behind. The integration tier under `tests/` boots a real Endure container through `tests/helpers/rr.go` and proves that config reaches other plugins: `tests/consumer.go` is a mock plugin that snapshots what it received, and the rpc plugin is used as a real consumer whose listener address must come from the config file. Its YAML fixtures live in `tests/configs/`; the rpc listeners use the 6391-6398 range, which no sibling plugin repo binds.
 
 ## Architecture
 
@@ -51,7 +55,7 @@ The plugin has three files in the root package:
 
 - **Error handling**: Uses `github.com/roadrunner-server/errors` with `errors.Op` for operation tracing. Each function defines `const op = errors.Op("...")` and wraps errors with `errors.E(op, err)`.
 - **Config version**: Every config file must have `version: "3"` (string). The plugin enforces this.
-- **Experimental features**: `.env` file support and `include:` require `ExperimentalFeatures: true`.
+- **Experimental features**: `.env` file loading requires `ExperimentalFeatures: true`. `include:` is not gated — `handleInclude` runs on every `Init`.
 - **`mapstructure` tags**: Config structs use `mapstructure` tags (not `yaml`) since Viper unmarshals via mapstructure.
 
 ## Linting
@@ -60,6 +64,6 @@ golangci-lint v2 config in `.golangci.yml`. Pre-commit hook runs `golangci-lint 
 
 ## CI
 
-- **linux.yml**: Tests on ubuntu with Go stable + PHP 8.5 (PHP needed for test fixture `composer.json`). Uploads coverage to Codecov.
+- **linux.yml**: Tests on ubuntu with Go stable. Runs the unit tier and the integration tier as separate steps and uploads both coverage profiles to Codecov.
 - **linters.yml**: Runs golangci-lint on push and PR.
 - **codeql-analysis.yml**: CodeQL security scanning.
