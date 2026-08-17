@@ -44,12 +44,12 @@ jobs:
 
       - name: Run config unit tests with coverage
         run: |
-          go test -timeout 20m -v -race -cover -coverpkg=./... -coverprofile=./tests/coverage-ci/configu.out -covermode=atomic ./...
+          go test -timeout 20m -v -race -cover -tags=debug -coverpkg=./... -coverprofile=./tests/coverage-ci/configu.out -covermode=atomic ./...
 
       - name: Run golang tests with coverage
         run: |
           cd tests
-          go test -timeout 20m -v -race -cover -coverpkg=github.com/roadrunner-server/config/v6/... -coverprofile=./coverage-ci/config.out -covermode=atomic ./...
+          go test -timeout 20m -v -race -cover -tags=debug -coverpkg=github.com/roadrunner-server/config/v6/... -coverprofile=./coverage-ci/config.out -covermode=atomic ./...
 
       - name: Transform coverage files
         run: |
