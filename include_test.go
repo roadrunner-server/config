@@ -156,7 +156,7 @@ func TestIncludeErrors(t *testing.T) {
 // The .env tests below reach godotenv, which sets the process environment and
 // offers no way back, so every variable name is unique to the test that uses it.
 
-func TestEnvFileLoadedWhenExperimental(t *testing.T) {
+func TestEnvFileLoaded(t *testing.T) {
 	dir := t.TempDir()
 	writeFile(t, dir, ".env.test", "CONFIG_TEST_ENVFILE_LEVEL=info\nCONFIG_TEST_ENVFILE_INTERVAL=30s\n")
 	sub := writeFile(t, dir, ".rr-sub.yaml", `version: "3"
@@ -168,28 +168,13 @@ logs:
   level: ${CONFIG_TEST_ENVFILE_LEVEL:-error}
 `, sub)
 
-	p := &Plugin{Path: root, ExperimentalFeatures: true}
+	p := &Plugin{Path: root}
 	require.NoError(t, p.Init())
 
 	assert.Equal(t, "info", p.Get("logs.level"))
 
 	// The values reach the included files too.
 	assert.Equal(t, "30s", p.Get("reload.interval"))
-}
-
-func TestEnvFileIgnoredWithoutExperimental(t *testing.T) {
-	dir := t.TempDir()
-	writeFile(t, dir, ".env.test", "CONFIG_TEST_ENVFILE_OFF_LEVEL=info\n")
-	root := writeFile(t, dir, ".rr.yaml", `version: "3"
-envfile: ".env.test"
-logs:
-  level: ${CONFIG_TEST_ENVFILE_OFF_LEVEL:-error}
-`)
-
-	p := &Plugin{Path: root}
-	require.NoError(t, p.Init())
-
-	assert.Equal(t, "error", p.Get("logs.level"))
 }
 
 // TestEnvFileResolvedRelativeToConfigDir covers the base directory the envfile
@@ -205,7 +190,7 @@ logs:
   level: ${CONFIG_TEST_ENVFILE_NESTED_LEVEL:-error}
 `)
 
-	p := &Plugin{Path: root, ExperimentalFeatures: true}
+	p := &Plugin{Path: root}
 	require.NoError(t, p.Init())
 
 	assert.Equal(t, "info", p.Get("logs.level"))
@@ -216,23 +201,9 @@ func TestEnvFileMissingFails(t *testing.T) {
 		Path: writeYAML(t, `version: "3"
 envfile: ".env.absent"
 `),
-		ExperimentalFeatures: true,
 	}
 
 	require.ErrorContains(t, p.Init(), "no such file")
-}
-
-func TestExperimentalWithoutEnvFileKey(t *testing.T) {
-	p := &Plugin{
-		Path: writeYAML(t, `version: "3"
-logs:
-  level: debug
-`),
-		ExperimentalFeatures: true,
-	}
-	require.NoError(t, p.Init())
-
-	assert.Equal(t, "debug", p.Get("logs.level"))
 }
 
 func TestOSEnvBeatsEnvFile(t *testing.T) {
@@ -246,7 +217,7 @@ logs:
   level: ${CONFIG_TEST_ENVFILE_PRIORITY_LEVEL:-error}
 `)
 
-	p := &Plugin{Path: root, ExperimentalFeatures: true}
+	p := &Plugin{Path: root}
 	require.NoError(t, p.Init())
 
 	assert.Equal(t, "debug", p.Get("logs.level"))

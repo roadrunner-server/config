@@ -62,13 +62,10 @@ func (p *Plugin) Init() error {
 		return errors.E(op, err)
 	}
 
-	// possibility to use env file
-	// 'envfile' is an experimental feature
-	if p.Experimental() {
-		err = p.handleEnvFile()
-		if err != nil {
-			return errors.E(op, err)
-		}
+	// load the .env file referenced by the 'envfile' key, if any
+	err = p.handleEnvFile()
+	if err != nil {
+		return errors.E(op, err)
 	}
 
 	// automatically inject ENV variables using ${ENV}/$ENV pattern

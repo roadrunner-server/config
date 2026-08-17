@@ -45,7 +45,7 @@ The plugin has three files in the root package:
 |------|---------|
 | `plugin.go` | `Plugin` struct, `Init()` lifecycle, flag parsing, version checking, `UnmarshalKey`/`Get`/`Has` API |
 | `expand.go` | Environment variable expansion: `${VAR}`, `$VAR`, `${VAR:-default}` syntax; iterates all Viper keys including string slices |
-| `include.go` | Config file includes (`include:` key), `.env` file loading via `godotenv` (experimental feature) |
+| `include.go` | Config file includes (`include:` key), `.env` file loading via `godotenv` |
 
 **Plugin lifecycle**: `Init()` reads the YAML file into Viper → loads `.env` file (if experimental) → expands env vars → applies CLI flag overrides → validates version key → merges included config files.
 
@@ -55,7 +55,7 @@ The plugin has three files in the root package:
 
 - **Error handling**: Uses `github.com/roadrunner-server/errors` with `errors.Op` for operation tracing. Each function defines `const op = errors.Op("...")` and wraps errors with `errors.E(op, err)`.
 - **Config version**: Every config file must have `version: "3"` (string). The plugin enforces this.
-- **Experimental features**: `.env` file loading requires `ExperimentalFeatures: true`. `include:` is not gated — `handleInclude` runs on every `Init`.
+- **Experimental features**: nothing is currently gated behind `ExperimentalFeatures`; the field and `Experimental()` remain part of the configurer API. Both `handleEnvFile` and `handleInclude` run on every `Init`.
 - **`mapstructure` tags**: Config structs use `mapstructure` tags (not `yaml`) since Viper unmarshals via mapstructure.
 
 ## Linting
