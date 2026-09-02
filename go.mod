@@ -2,7 +2,7 @@ module github.com/roadrunner-server/config/v6
 
 go 1.27
 
-toolchain go1.27.0
+toolchain go1.27.1
 
 require (
 	github.com/joho/godotenv v1.5.1
