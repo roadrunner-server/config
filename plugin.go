@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -172,24 +171,20 @@ func (p *Plugin) Name() string {
 
 func parseFlag(flag string) (string, string, error) {
 	const op = errors.Op("parse_flag")
-	if !strings.Contains(flag, "=") {
+	key, value, ok := strings.Cut(strings.TrimLeft(flag, " \"'`"), "=")
+	if !ok {
 		return "", "", errors.E(op, errors.Errorf("invalid flag `%s`", flag))
 	}
 
-	parts := strings.SplitN(strings.TrimLeft(flag, " \"'`"), "=", 2)
-	if len(parts) < 2 {
-		return "", "", errors.Str("usage: -o key=value")
-	}
-
-	if parts[0] == "" {
+	if key == "" {
 		return "", "", errors.Str("key should not be empty")
 	}
 
-	if parts[1] == "" {
+	if value == "" {
 		return "", "", errors.Str("value should not be empty")
 	}
 
-	return strings.Trim(parts[0], " \n\t"), parseValue(strings.Trim(parts[1], " \n\t")), nil
+	return strings.Trim(key, " \n\t"), parseValue(strings.Trim(value, " \n\t")), nil
 }
 
 func parseValue(value string) string {
@@ -197,7 +192,7 @@ func parseValue(value string) string {
 
 	if escape == '"' || escape == '\'' || escape == '`' {
 		value = strings.Trim(value, string(escape))
-		value = strings.ReplaceAll(value, fmt.Sprintf("\\%s", string(escape)), string(escape))
+		value = strings.ReplaceAll(value, "\\"+string(escape), string(escape))
 	}
 
 	return value
