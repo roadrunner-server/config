@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func getConfiguration(path string) (map[string]any, string, error) {
+func getConfiguration(path string) (*viper.Viper, string, error) {
 	v := viper.New()
 	v.SetConfigFile(path)
 	err := v.ReadInConfig()
@@ -29,7 +29,7 @@ func getConfiguration(path string) (map[string]any, string, error) {
 	// automatically inject ENV variables using ${ENV} pattern
 	expandEnvViper(v)
 
-	return v.AllSettings(), ver.(string), nil
+	return v, ver.(string), nil
 }
 
 func (p *Plugin) handleInclude(rootVersion string) error {
@@ -39,7 +39,7 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 	}
 
 	for _, file := range ifiles {
-		config, version, err := getConfiguration(file)
+		included, version, err := getConfiguration(file)
 		if err != nil {
 			return err
 		}
@@ -48,9 +48,9 @@ func (p *Plugin) handleInclude(rootVersion string) error {
 			return errors.Str("version in included file must be the same as in root")
 		}
 
-		// overriding configuration
-		for key, val := range config {
-			p.viper.Set(key, val)
+		// Set leaf keys so shared sections keep main-only and earlier-include keys.
+		for _, key := range included.AllKeys() {
+			p.viper.Set(key, included.Get(key))
 		}
 	}
 

@@ -52,7 +52,7 @@ reload:
 
 	// Keys only the root defines survive the merge.
 	assert.Equal(t, "development", p.Get("logs.mode"))
-	assert.Equal(t, []any{".php"}, p.Get("reload.patterns"))
+	assert.Equal(t, []string{".php"}, p.Get("reload.patterns"))
 
 	// A section only the included file defines is reachable, down to a key
 	// nested three levels deep.
@@ -76,6 +76,196 @@ logs:
 	require.NoError(t, p.Init())
 
 	assert.Equal(t, "debug", p.Get("logs.level"))
+}
+
+func TestIncludeUnmarshalKeyPreservesMainOnlySettings(t *testing.T) {
+	type poolCfg struct {
+		NumWorkers      int    `mapstructure:"num_workers"`
+		AllocateTimeout string `mapstructure:"allocate_timeout"`
+		DestroyTimeout  string `mapstructure:"destroy_timeout"`
+	}
+
+	type pipelineCfg struct {
+		Driver string         `mapstructure:"driver"`
+		Config map[string]any `mapstructure:"config"`
+	}
+
+	type jobsCfg struct {
+		Consume      []string               `mapstructure:"consume"`
+		PipelineSize int                    `mapstructure:"pipeline_size"`
+		Pool         *poolCfg               `mapstructure:"pool"`
+		Pipelines    map[string]pipelineCfg `mapstructure:"pipelines"`
+	}
+
+	type wholeCfg struct {
+		Jobs jobsCfg `mapstructure:"jobs"`
+	}
+
+	tests := []struct {
+		name             string
+		rootBody         string
+		includes         []string
+		flags            []string
+		wantConsume      []string
+		wantPipelineSize int
+		wantWorkers      int
+		wantPipelines    []string
+	}{
+		{
+			name: "reported jobs overlay preserves consume and static pipeline",
+			rootBody: `jobs:
+  consume: [stand]
+  pipelines:
+    stand:
+      driver: kafka
+      config:
+        priority: 1
+        group_options: { group_id: g }
+        consumer_options: { topics: [t] }
+`,
+			includes: []string{
+				`version: "3"
+jobs:
+  pipeline_size: 100000
+  pool: { num_workers: 4, allocate_timeout: 60s, destroy_timeout: 5s }
+`,
+			},
+			wantConsume:      []string{"stand"},
+			wantPipelineSize: 100000,
+			wantWorkers:      4,
+			wantPipelines:    []string{"stand"},
+		},
+		{
+			name: "included value overrides matching key while main-only env expansion survives",
+			rootBody: `jobs:
+  consume: ["${CONFIG_TEST_MAIN_CONSUME:-stand}"]
+  pipeline_size: 10
+`,
+			includes: []string{
+				`version: "3"
+jobs:
+  pipeline_size: 100000
+`,
+			},
+			wantConsume:      []string{"stand"},
+			wantPipelineSize: 100000,
+		},
+		{
+			name: "later include overrides earlier include while keeping earlier-only and main-only keys",
+			rootBody: `jobs:
+  consume: [stand]
+`,
+			includes: []string{
+				`version: "3"
+jobs:
+  pipeline_size: 500
+  pool: { num_workers: 2 }
+`,
+				`version: "3"
+jobs:
+  pipeline_size: 1000
+`,
+			},
+			wantConsume:      []string{"stand"},
+			wantPipelineSize: 1000,
+			wantWorkers:      2,
+		},
+		{
+			name: "included list replaces main list instead of appending",
+			rootBody: `jobs:
+  consume: [a, b]
+`,
+			includes: []string{
+				`version: "3"
+jobs:
+  consume: [c]
+  pipeline_size: 200
+`,
+			},
+			wantConsume:      []string{"c"},
+			wantPipelineSize: 200,
+		},
+		{
+			name: "included key overrides CLI flag while flag-only key survives",
+			rootBody: `jobs:
+  consume: [stand]
+`,
+			includes: []string{
+				`version: "3"
+jobs:
+  pipeline_size: 100
+`,
+			},
+			flags:            []string{"jobs.pipeline_size=50", "jobs.pool.num_workers=2"},
+			wantConsume:      []string{"stand"},
+			wantPipelineSize: 100,
+			wantWorkers:      2,
+		},
+		{
+			name: "single file control",
+			rootBody: `jobs:
+  consume: [stand]
+  pipeline_size: 100000
+  pool: { num_workers: 4, allocate_timeout: 60s, destroy_timeout: 5s }
+  pipelines:
+    stand:
+      driver: kafka
+      config:
+        priority: 1
+`,
+			wantConsume:      []string{"stand"},
+			wantPipelineSize: 100000,
+			wantWorkers:      4,
+			wantPipelines:    []string{"stand"},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			includePaths := make([]string, 0, len(tc.includes))
+			for i, body := range tc.includes {
+				includePaths = append(includePaths, writeFile(t, dir, fmt.Sprintf(".rr-inc-%d.yaml", i), body))
+			}
+
+			var rootPath string
+			if len(includePaths) > 0 {
+				rootPath = rootWithIncludes(t, dir, tc.rootBody, includePaths...)
+			} else {
+				rootPath = writeFile(t, dir, ".rr.yaml", "version: \"3\"\n"+tc.rootBody)
+			}
+
+			p := &Plugin{Path: rootPath, Flags: tc.flags}
+			require.NoError(t, p.Init())
+
+			var section jobsCfg
+			require.NoError(t, p.UnmarshalKey("jobs", &section))
+
+			var whole wholeCfg
+			require.NoError(t, p.Unmarshal(&whole))
+
+			assert.Equal(t, tc.wantConsume, section.Consume)
+			assert.Equal(t, tc.wantConsume, whole.Jobs.Consume)
+			assert.Equal(t, tc.wantConsume, p.Get("jobs.consume"))
+			assert.Equal(t, tc.wantPipelineSize, section.PipelineSize)
+			assert.Equal(t, tc.wantPipelineSize, whole.Jobs.PipelineSize)
+
+			if tc.wantWorkers > 0 {
+				require.NotNil(t, section.Pool)
+				require.NotNil(t, whole.Jobs.Pool)
+				assert.Equal(t, tc.wantWorkers, section.Pool.NumWorkers)
+				assert.Equal(t, tc.wantWorkers, whole.Jobs.Pool.NumWorkers)
+			}
+
+			if len(tc.wantPipelines) > 0 {
+				for _, name := range tc.wantPipelines {
+					assert.Contains(t, section.Pipelines, name)
+					assert.Contains(t, whole.Jobs.Pipelines, name)
+					assert.Equal(t, "kafka", section.Pipelines[name].Driver)
+				}
+			}
+		})
+	}
 }
 
 func TestIncludeWorksWithoutExperimentalFeatures(t *testing.T) {
