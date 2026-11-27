@@ -2,7 +2,6 @@
 
 ## [6.0.1](https://github.com/roadrunner-server/config/compare/v6.0.0...v6.0.1) (2026-11-27)
 
+### 🐛 Bug Fixes
 
-### Bug Fixes
-
-* merge included leaf keys without overwriting main-only section settings ([b9a0ff4](https://github.com/roadrunner-server/config/commit/b9a0ff4edcc37b1c6956e0028bd6a547bf81cfcd))
+- **Included configuration merge**: Apply included leaf keys individually instead of replacing entire top-level sections. Main-only keys, earlier-include keys, and their environment-expanded values remain available when decoding shared sections with `UnmarshalKey`. See [BUG #2445](https://github.com/roadrunner-server/roadrunner/issues/2445) and [PR #121](https://github.com/roadrunner-server/config/pull/121).
